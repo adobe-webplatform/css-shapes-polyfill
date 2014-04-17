@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="copyright" content="Copyright © 2014 Adobe Systems Incorporated. All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the “License”);
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an “AS IS” BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.">
+<script src='../src/rect.js'></script>
+<script src='../src/polygon.js'></script>
+<style>
+    #polygon-editor-root {
+        width: 800px;
+        height: 600px;
+        border: solid black 4px;
+        margin: 20px;
+    }
+
+    #polygon-editor-canvas {
+        cursor: default;
+        background-color: #636363;
+    }
+
+    .footer {
+        display: inline-block;
+        position: absolute;
+        bottom: 0; right: 0;
+        padding: .5em;
+    }
+</style>
+</head>
+<body>
+  <div id="polygon-editor-root">
+    <canvas id="polygon-editor-canvas" tabindex="0" width="800px" height="600px"></canvas>
+  </div>
+
+<div class='footer'>text <a href='http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License'>cc-sa</a> via <a href='http://wikipedia.org'>Wikipedia</a></div>
+</body>
+<script src="polygon-editor-code.js"></script>
+</html>
+

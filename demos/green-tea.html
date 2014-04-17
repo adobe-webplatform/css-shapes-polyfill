@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<style>
+#container {
+    margin: 25px;
+    width: 856px;
+    font-size: 20px;
+}
+
+#image {
+    display: block;
+    float: right;
+    height: 567px;
+    width: 100%;
+    shape-outside: polygon(56% 15%, 100% 15%, 100% 86%, 28% 86%) content-box;
+    z-index: -1;
+}
+
+#content {
+    padding-left: 10%;
+    padding-top: 15%;
+    color: white;
+}
+
+.footer {
+    display: inline-block;
+    position: absolute;
+    bottom: 0; right: 0;
+    padding: .5em;
+}
+</style>
+<body>
+  <div id="container">
+      <img id="image" src="green-tea.jpg">
+      <p id="content">Green tea is made from the leaves from Camellia sinensis that have undergone minimal oxidation during processing. Green tea originated in China, but it has become associated with many cultures throughout Asia. Green tea has recently become more widespread in the West, where black tea has been the traditionally consumed tea.</p>
+  </div>
+
+<div class='footer'>text <a href='http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License'>cc-sa</a> via <a href='http://wikipedia.org'>Wikipedia</a></div>
+<script src='../shapes-polyfill.js'></script>
+</body>
+</html>
+

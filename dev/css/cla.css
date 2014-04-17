@@ -1,0 +1,108 @@
+/*
+Copyright 2014 Adobe Systems Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600);
+
+html
+{
+    background: #eee;
+}
+
+
+body
+{
+    margin: 0 auto;
+    padding: 2em;
+    max-width:800px;
+    -webkit-box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    -moz-box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    box-shadow: 0 0 12px rgba(0,0,0,0.4);
+}
+
+p
+{
+    margin: 1.2em 0;
+}
+
+
+p, li
+{
+    font-family: "Source Sans Pro", Verdana, sans-serif;
+    font-size: 1.1em;
+    line-height: 1.6em;
+}
+
+.well
+{
+    font-family: "Source Sans Pro", Verdana, sans-serif;
+    font-size: 1.3em;
+    font-weight: 600;
+    padding: 2em;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+}
+
+h1
+{
+    font-family: "Source Sans Pro", Verdana, sans-serif;
+    font-size: 5em;
+    line-height: 1.1em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.icon-white {
+background-image: url("../img/glyphicons-halflings-white.png");
+}
+
+@media only screen
+and (max-width: 320px)
+{
+    h1
+    {
+        font-size: 2em;
+    }
+    
+    .well
+    {
+        font-size: 1em;
+        padding: 1em;
+    }
+    body
+    {
+        margin: 0;
+    }
+}
+
+@media only screen
+and (min-width: 320px) and (max-width: 600px)
+{
+    h1
+    {
+        font-size: 3em;
+    }
+    
+    body
+    {
+        margin: 0;
+    }
+    
+    .well
+    {
+        font-size: 1em;
+        padding: 1em;
+    }
+}
+

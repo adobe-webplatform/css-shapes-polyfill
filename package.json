@@ -1,0 +1,24 @@
+{
+  "name": "shapes-polyfill",
+  "version": "0.0.0",
+  "description": "A Polyfill for CSS Shapes",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.corp.adobe.com:betravis/shapes-polyfill.git"
+  },
+  "authors": ["Bear Travis", "Hans Muller"],
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt": "~0.4.2",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}

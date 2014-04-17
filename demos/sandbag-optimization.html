@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="copyright" content="Copyright © 2014 Adobe Systems Incorporated. All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the “License”);
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an “AS IS” BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.">
+<style>
+#container {
+    width: 50%;
+    font-size: 18x;
+}
+
+#polygon-shape-outside-left {
+    width: 200px;
+    height: 200px;
+    float: left;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200px' height='200px'><polygon points='0,0 200,33 89,141 0,200' fill='rgba(0,0,255, 0.25)'/></svg>");
+    shape-outside: polygon(0px 0px, 200px 33px, 89px 141px, 0px 200px);
+}
+
+#box-shape-outside-left {
+    width: 200px;
+    height: 200px;
+    float: left;
+    /* radii: top-left-x top-right-x bottom-right-x bottom-left-x / top-left-y ... */
+    shape-outside: inset(round 0px 180px 30px 0px / 0px 45px 85px 0px);
+    border-top-right-radius: 180px 45px;
+    border-bottom-right-radius: 30px 85px;
+    background-color: rgba(255,161,0, 0.20);
+}
+
+#box-shape-outside-right {
+    width: 200px;
+    height: 200px;
+    float: right;
+    /* radii: top-left-x top-right-x bottom-right-x bottom-left-x / top-left-y ... */
+    shape-outside: inset(round 180px 0px 0px 30px / 45px 0px 0px 85px);
+    border-top-left-radius: 180px 45px;
+    border-bottom-left-radius: 30px 85px;
+    background-color: rgba(255,161,0, 0.20);
+}
+
+.sandbag {
+   background-image: url("data:image/svg+xml;UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><rect width='100%' height='100%' fill='none' stroke='rgba(255,161,0, 0.80)'/></svg>");
+   background-repeat: no-repeat;
+}
+
+.footer {
+  display: inline-block;
+  position: absolute;
+  bottom: 0; right: 0;
+  padding: .5em;
+}
+
+</style>
+</head>
+<body>
+<div id="container">
+    <div id="box-shape-outside-left"></div>
+    <p>Carpentry is a skilled trade in which the primary work performed is the cutting, shaping and installation of building materials during the construction of buildings, ships, timber bridges, concrete formwork, etc. Carpenters traditionally worked with natural wood and did the rougher work such as framing, but today many other materials are also used and sometimes the finer trades of cabinetmaking and furniture building are considered carpentry. Carpentry in the United States is almost always done by men. With 98.5% of carpenters being male, it was the fourth most male-dominated occupation in the country in 1999, and there were about 1.5 million positions in 2006. Carpenters are usually the first tradesmen on a job and the last to leave. Carpenters normally framed post-and-beam buildings until the end of the 19th century; now this old fashioned carpentry is called timber framing. Carpenters learn this trade by being employed through an apprenticeship training—normally 4 years—and qualify by successfully completing that country's department of labour competency test in places such as the UK, USA and South Africa. It is also common that the skill can be learnt by gaining work experience other than a formal training program, which may be the case in many places.</p>
+</div>
+
+<div id="container" style="text-align: right">
+    <div id="box-shape-outside-right"></div>
+    <p>In the UK, carpentry is more correctly used to describe the skill involved only in first fixing of timber items and mainly covers the construction of roofs, floors and timber framed buildings, i.e., those areas of construction that are normally hidden in a finished building. Second fix work, the construction of items such as skirting boards, architraves, and doors, is more correctly referred to as joinery. Carpentry is also used to construct the formwork into which concrete is poured during the building of structures such as roads and highway overpasses. In the UK, the skill of making timber formwork for poured, or in situ, concrete, is referred to as shuttering. While the primary material used in carpentry is wood, the construction of walls with metal studs and concrete formwork with reusable metal forms is considered a carpentry skill.</p>
+
+    <p>Carpentry in the United States is historically defined similarly to the United Kingdom as the "heavier and stronger" work distinguished from a joiner "...who does lighter and more ornamental work than that of a carpenter..." although the "...work of a carpenter and joiner are often combined." Joiner is less common than the terms finish carpenter or cabinetmaker. The terms housewright and barnwright were used historically, now occasionally used by carpenters who work using traditional methods and materials. Someone who builds custom concrete formwork is a form carpenter.</p>
+</div>
+
+<div class='footer'>text <a href='http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License'>cc-sa</a> via <a href='http://wikipedia.org'>Wikipedia</a></div>
+<script src="../shapes-polyfill.js"></script>
+</body>
+</html>

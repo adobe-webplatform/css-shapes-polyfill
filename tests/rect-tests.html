@@ -1,0 +1,21 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Style Polyfill Tests</title>
+<link rel='stylesheet' href='../node_modules/mocha/mocha.css'>
+</head>
+<body>
+<div id='mocha'></div>
+<script src='../node_modules/mocha/mocha.js'></script>
+<script src='../node_modules/chai/chai.js'></script>
+<script src='rect-tests.js'></script>
+<script src='../src/rect.js'></script>
+<script>
+mocha.checkLeaks();
+
+RectTests.register(mocha, chai.expect);
+
+mocha.run();
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+CSS Shapes Polyfill
+Copyright 2014 Adobe Systems Incorporated
+
+This software is licensed under the Apache License, Version 2.0 (see LICENSE file).
+
+This software uses the following third party libraries that may have licenses differeng
+from that of the software itself. You can find the libraries and their respective
+licenses below.
+
+- style-polyfill
+
+    The style loading and parsing code is a modified version of one of Adobe's CSS Regions
+    Polyfills [1]. That code is also licensed under Apache 2.0 License.
+
+- tests/performance
+
+    The performance tests are a slightly modified version of those found in WebKit.
+    The resources there include runner.js, a WebKit performance testing framework.
+
+- copy text
+
+    The copy used in some of the test pages is from public domain works from Project Gutenberg [2].
+
+[1] https://github.com/adobe-webplatform/css-regions-polyfill
+[2] http://gutenberg.org

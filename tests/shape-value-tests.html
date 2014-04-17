@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Shape Parsing Tests</title>
+<link rel='stylesheet' href='../node_modules/mocha/mocha.css'>
+</head>
+<body>
+<div id='mocha'></div>
+<script src='../node_modules/mocha/mocha.js'></script>
+<script src='../node_modules/chai/chai.js'></script>
+<script src='shape-value-tests.js'></script>
+<script src='../src/shape-value.js'></script>
+<script src='../src/metrics.js'></script>
+<script>
+mocha.checkLeaks();
+
+ShapeValueTests.register(mocha, chai.expect);
+
+mocha.run();
+</script>
+</body>
+</html>

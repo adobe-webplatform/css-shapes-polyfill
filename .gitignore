@@ -1,0 +1,5 @@
+*~
+.*.sw[a-p]
+.DS_Store
+node_modules/
+tags

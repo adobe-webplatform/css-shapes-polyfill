@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="copyright" content="Copyright © 2014 Adobe Systems Incorporated. All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the “License”);
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an “AS IS” BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.">
+<style>
+#container {
+    width: 400px;
+    font-size: 10px;
+}
+
+#polygon-shape-outside {
+    width: 241px;
+    height: 234px;
+    float: left;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='241px' height='234px'><polygon points='241,82 51,16 210,163 124,234 16,198 211,0 0,133' fill-rule='nonzero' fill='blue'/></svg>");
+    shape-outside: polygon(241px 82px, 51px 16px, 210px 163px, 124px 234px, 16px 198px, 211px 0, 0 133px);
+}
+
+.footer {
+  display: inline-block;
+  position: absolute;
+  bottom: 0; right: 0;
+  padding: .5em;
+}
+
+</style>
+</head>
+<body>
+<div id="container">
+<div id="polygon-shape-outside"></div>
+<p>Pelicans are a genus of large water birds comprising the family Pelecanidae. They are characterised by a long beak and large throat pouch used for catching prey and draining water from the scooped up contents before swallowing. They have predominantly pale plumage, the exceptions being the Brown and Peruvian Pelicans. The bills, pouches and bare facial skin of all species become brightly coloured before the breeding season. The eight living pelican species have a patchy global distribution, ranging latitudinally from the tropics to the temperate zone, though they are absent from interior South America as well as from polar regions and the open ocean. Fossil evidence of pelicans dates back at least 30 million years, to the remains of a beak very similar to that of modern species recovered from Oligocene strata in France.</p>
+</div>
+
+<div class='footer'>text <a href='http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License'>cc-sa</a> via <a href='http://wikipedia.org'>Wikipedia</a></div>
+<script src='../shapes-polyfill.js'></script>
+</body>
+</html>
+
+
+        
