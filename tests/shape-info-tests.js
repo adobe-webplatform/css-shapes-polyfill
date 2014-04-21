@@ -14,15 +14,15 @@ function register(mocha, expect) {
                 padding: '0',
                 width: '100px',
                 height: '100px',
-                float: 'left'
+                cssFloat: 'left'
             },
             step: 20,
             output: [
-                { top: 0, bottom: 20, offset: 0, float: 'left' },
-                { top: 20, bottom: 40, offset: 80, float: 'left' },
-                { top: 40, bottom: 60, offset: 80, float: 'left' },
-                { top: 60, bottom: 80, offset: 80, float: 'left' },
-                { top: 80, bottom: 100, offset: 0, float: 'left' }
+                { top: 0, bottom: 20, offset: 0, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 80, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 80, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 80, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 0, cssFloat: 'left' }
             ]
         }
         ],

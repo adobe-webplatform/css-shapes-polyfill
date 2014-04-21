@@ -39,10 +39,10 @@ function fakeIt(element, offsets) {
         var sandbag = document.createElement('div');
         sandbag.className = "sandbag";
         styles = {
-            float: offset.float,
+            cssFloat: offset.cssFloat,
             width: offset.offset + 'px',
             height: height + 'px',
-            clear: offset.float
+            clear: offset.cssFloat
         }
         for (prop in styles)
             sandbag.style[prop] = styles[prop];
@@ -69,7 +69,7 @@ function fakeIt(element, offsets) {
         width: element.clientWidth + 'px',
         height: element.clientHeight + 'px',
     }
-    styles[offsets[0].float] = '0';
+    styles[offsets[0].cssFloat] = '0';
 
     wrapper.appendChild(element);
 
@@ -82,7 +82,7 @@ function fakeIt(element, offsets) {
 Polyfill.prototype.polyfill = function(element, settings) {
     var computedStyle = getComputedStyle(element);
 
-    if (!(/left|right/.test(computedStyle.float) && element.getAttribute('data-shape-outside')))
+    if (!(/left|right/.test(computedStyle.cssFloat) && element.getAttribute('data-shape-outside')))
         return;
 
     // ideally this would default to lineHeight, but 'normal' is a valid computed value

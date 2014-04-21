@@ -142,7 +142,7 @@ ShapeInfo.prototype.computeStepOffsets = function(step) {
         lineBounds.bottom -= (this.metrics.margins[0] + this.shapeValue.box.y);
 
         // get the offset relative to the margin box
-        if (this.metrics.float === 'left') {
+        if (this.metrics.cssFloat === 'left') {
             offset = exclusionEdgeValue(this.rightExclusionEdge(lineBounds));
             offset += this.shapeValue.box.x + this.metrics.margins[3];
         } else {
@@ -152,31 +152,30 @@ ShapeInfo.prototype.computeStepOffsets = function(step) {
 
         // push the margin box relative offsets
         offsets.push({
-            float: this.metrics.float,
+            cssFloat: this.metrics.cssFloat,
             top: lineBounds.top + this.shapeValue.box.y + this.metrics.margins[0],
             bottom: lineBounds.bottom + this.shapeValue.box.y + this.metrics.margins[0],
             'offset': Math.min(offset, this.metrics.marginBox.width)
         });
     }
 
-    console.log(offsets.length);
     return offsets;
 }
 
 ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
     var dx = this.shapeValue.box.x + this.metrics.margins[3];
     var dy = this.metrics.margins[0] + this.shapeValue.box.y;
-    var offsets = (this.metrics.float === 'left')
+    var offsets = (this.metrics.cssFloat === 'left')
         ? this.geometry.rightExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit)
         : this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
 
     var result = [];
     var y = dy;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset = Math.min(this.metrics.marginBox.width, (this.metrics.float === 'left') 
+        var layoutOffset = Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
             ? offsets[i].x + dx
             : this.metrics.marginBox.width - (offsets[i].x + dx));
-        result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, float: this.metrics.float});
+        result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
         y += offsets[i].height;
     }
     

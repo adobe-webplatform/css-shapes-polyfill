@@ -20,9 +20,9 @@ function Metrics(element) {
     this.units = { px: 1 };
     this.element = element;
 
-    // Used values already in px
+    // Used values already in px, but may be "" in some browsers, eg FF
     // These values are stored in their CSS order top, right, bottom, left
-    var parseLength = function(length) { return parseInt(length); }
+    var parseLength = function(length) { return length && length.length ? parseInt(length) : 0; }
     this.margins = [computedStyle.marginTop, computedStyle.marginRight, computedStyle.marginBottom, computedStyle.marginLeft];
     this.margins = this.margins.map(parseLength);
     this.borders = [computedStyle.borderTop, computedStyle.borderRight, computedStyle.borderBottom, computedStyle.borderLeft];
@@ -56,7 +56,7 @@ function Metrics(element) {
         ];
     });
 
-    this.float = computedStyle.float;
+    this.cssFloat = computedStyle.cssFloat;
 }
 
 Metrics.prototype.unitToPx = function(unit) {
