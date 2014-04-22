@@ -144,19 +144,19 @@ RoundedRect.prototype.scaleRadii = function(factor)
 
     radii.topLeft.scale(factor);
     if (radii.topLeft.isEmpty)
-        radii.topLeft = RoundedRect.zeroRadii;
+        radii.topLeft = Size.zeroSize;
 
     radii.topRight.scale(factor);
     if (radii.topRight.isEmpty)
-        radii.topRight = RoundedRect.zeroRadii;
+        radii.topRight = Size.zeroSize;
 
     radii.bottomLeft.scale(factor);
     if (radii.bottomLeft.isEmpty)
-        radii.bottomLeft = RoundedRect.zeroRadii;
+        radii.bottomLeft = Size.zeroSize;
 
     radii.bottomRight.scale(factor);
     if (radii.bottomRight.isEmpty)
-        radii.bottomRight = RoundedRect.zeroRadii;
+        radii.bottomRight = Size.zeroSize;
 };
 
 // See RoundedRect::isRenderable() in https://trac.webkit.org/browser/trunk/Source/WebCore/platform/graphics/RoundedRect.cpp
@@ -181,7 +181,12 @@ RoundedRect.prototype.adjustRadii = function()
     var maxRadiusWidth = Math.max(radii.topLeft.width + radii.topRight.width, radii.bottomLeft.width + radii.bottomRight.width);
     var maxRadiusHeight = Math.max(radii.topLeft.height + radii.bottomLeft.height, radii.topRight.height + radii.bottomRight.height);
     if (maxRadiusWidth <= 0 || maxRadiusHeight <= 0) {
-        this.radii = zeroRadii();
+        this.radii = {
+            topLeft: Size.zeroSize,
+            topRight: Size.zeroSize,
+            bottomRight: Size.zeroSize,
+            bottomLeft: Size.zeroSize
+        };
         return;
     }
     var rect = this.rect;
@@ -262,12 +267,12 @@ function computeOffsetHeight(dx, dy, areaLimit) {
 
 RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
     if (!this.rect.overlapsYRange(y1, y2))
-        return [{x: 0, height: y2 - y1}];
+        return [{x: undefined, height: y2 - y1}];
 
     var offsets = [];
 
     if (y1 < this.rect.y)
-        offsets.push({x: 0, height: this.rect.y - y1});
+        offsets.push({x: undefined, height: this.rect.y - y1});
 
     var topLeftCorner = this.topLeftCorner();
     if (topLeftCorner.overlapsYRange(y1, y2)) {
@@ -296,19 +301,19 @@ RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2
     }
 
     if (y2 > this.rect.maxY)
-        offsets.push({x: 0, height: y2 - this.rect.maxY});
+        offsets.push({x: undefined, height: y2 - this.rect.maxY});
 
     return offsets;
 }
 
 RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
     if (!this.rect.overlapsYRange(y1, y2))
-        return [{x: 0, height: y2 - y1}];
+        return [{x: undefined, height: y2 - y1}];
 
     var offsets = [];
 
     if (y1 < this.rect.y)
-        offsets.push({x: 0, height: this.rect.y - y1});
+        offsets.push({x: undefined, height: this.rect.y - y1});
 
     var topRightCorner = this.topRightCorner();
     if (topRightCorner.overlapsYRange(y1, y2)) {
@@ -337,7 +342,7 @@ RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y
     }
 
     if (y2 > this.rect.maxY)
-        offsets.push({x: 0, height: y2 - this.rect.maxY});
+        offsets.push({x: undefined, height: y2 - this.rect.maxY});
 
     return offsets;
 }

@@ -48,7 +48,7 @@ function register(mocha, expect) {
             y2: 0,
             renderable: false,
             left: 0,
-            right: 0
+            right: 100
         }
         ],
         runTest: function(test) {

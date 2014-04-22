@@ -836,19 +836,19 @@ RoundedRect.prototype.scaleRadii = function(factor)
 
     radii.topLeft.scale(factor);
     if (radii.topLeft.isEmpty)
-        radii.topLeft = RoundedRect.zeroRadii;
+        radii.topLeft = Size.zeroSize;
 
     radii.topRight.scale(factor);
     if (radii.topRight.isEmpty)
-        radii.topRight = RoundedRect.zeroRadii;
+        radii.topRight = Size.zeroSize;
 
     radii.bottomLeft.scale(factor);
     if (radii.bottomLeft.isEmpty)
-        radii.bottomLeft = RoundedRect.zeroRadii;
+        radii.bottomLeft = Size.zeroSize;
 
     radii.bottomRight.scale(factor);
     if (radii.bottomRight.isEmpty)
-        radii.bottomRight = RoundedRect.zeroRadii;
+        radii.bottomRight = Size.zeroSize;
 };
 
 // See RoundedRect::isRenderable() in https://trac.webkit.org/browser/trunk/Source/WebCore/platform/graphics/RoundedRect.cpp
@@ -873,7 +873,12 @@ RoundedRect.prototype.adjustRadii = function()
     var maxRadiusWidth = Math.max(radii.topLeft.width + radii.topRight.width, radii.bottomLeft.width + radii.bottomRight.width);
     var maxRadiusHeight = Math.max(radii.topLeft.height + radii.bottomLeft.height, radii.topRight.height + radii.bottomRight.height);
     if (maxRadiusWidth <= 0 || maxRadiusHeight <= 0) {
-        this.radii = zeroRadii();
+        this.radii = {
+            topLeft: Size.zeroSize,
+            topRight: Size.zeroSize,
+            bottomRight: Size.zeroSize,
+            bottomLeft: Size.zeroSize
+        };
         return;
     }
     var rect = this.rect;
@@ -954,12 +959,12 @@ function computeOffsetHeight(dx, dy, areaLimit) {
 
 RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
     if (!this.rect.overlapsYRange(y1, y2))
-        return [{x: 0, height: y2 - y1}];
+        return [{x: undefined, height: y2 - y1}];
 
     var offsets = [];
 
     if (y1 < this.rect.y)
-        offsets.push({x: 0, height: this.rect.y - y1});
+        offsets.push({x: undefined, height: this.rect.y - y1});
 
     var topLeftCorner = this.topLeftCorner();
     if (topLeftCorner.overlapsYRange(y1, y2)) {
@@ -988,19 +993,19 @@ RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2
     }
 
     if (y2 > this.rect.maxY)
-        offsets.push({x: 0, height: y2 - this.rect.maxY});
+        offsets.push({x: undefined, height: y2 - this.rect.maxY});
 
     return offsets;
 }
 
 RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
     if (!this.rect.overlapsYRange(y1, y2))
-        return [{x: 0, height: y2 - y1}];
+        return [{x: undefined, height: y2 - y1}];
 
     var offsets = [];
 
     if (y1 < this.rect.y)
-        offsets.push({x: 0, height: this.rect.y - y1});
+        offsets.push({x: undefined, height: this.rect.y - y1});
 
     var topRightCorner = this.topRightCorner();
     if (topRightCorner.overlapsYRange(y1, y2)) {
@@ -1029,7 +1034,7 @@ RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y
     }
 
     if (y2 > this.rect.maxY)
-        offsets.push({x: 0, height: y2 - this.rect.maxY});
+        offsets.push({x: undefined, height: y2 - this.rect.maxY});
 
     return offsets;
 }
@@ -1051,7 +1056,7 @@ function createRoundedRectForInset(inset, margin) {
     var topRight = toSize(inset.radii[1]);
     var bottomRight = toSize(inset.radii[2]);
     var bottomLeft = toSize(inset.radii[3]);
-    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + margin, inset.height + margin)
+    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + 2 * margin, inset.height + 2 * margin)
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
@@ -1074,7 +1079,6 @@ function createPolygon(polygon, shapeMargin) {
     return new Polygon(polygon.points, polygon.fillRule, shapeMargin);
 }
 
-var foo;
 function createShapeGeometry(shapeValue, whenReady) {
     var shapeMargin = (shapeValue.shapeMargin === undefined) ? 0 : shapeValue.shapeMargin;
     var geometry;
@@ -1088,7 +1092,6 @@ function createShapeGeometry(shapeValue, whenReady) {
             break;
         case "inset":
             geometry = createRoundedRectForInset(shapeValue.shape, shapeMargin);
-           foo = geometry;
             if (!geometry.isRenderable())
                 geometry.adjustRadii();
             break;
@@ -1164,11 +1167,11 @@ ShapeInfo.prototype.computeStepOffsets = function(step) {
 
         // get the offset relative to the margin box
         if (this.metrics.cssFloat === 'left') {
-            offset = exclusionEdgeValue(this.rightExclusionEdge(lineBounds));
-            offset += this.shapeValue.box.x + this.metrics.margins[3];
+            offset = this.rightExclusionEdge(lineBounds);
+            offset = (offset === undefined ? 0 : offset + this.shapeValue.box.x + this.metrics.margins[3]);
         } else {
-            offset = exclusionEdgeValue(this.leftExclusionEdge(lineBounds));
-            offset = this.metrics.marginBox.width - (offset + this.shapeValue.box.x + this.metrics.margins[3]);
+            offset = this.leftExclusionEdge(lineBounds);
+            offset = (offset === undefined ? 0 : this.metrics.marginBox.width - (offset + this.shapeValue.box.x + this.metrics.margins[3]));
         }
 
         // push the margin box relative offsets
@@ -1193,7 +1196,9 @@ ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
     var result = [];
     var y = dy;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset = Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
+        var layoutOffset = offsets[i].x === undefined
+            ? 0
+            : Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
             ? offsets[i].x + dx
             : this.metrics.marginBox.width - (offsets[i].x + dx));
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});

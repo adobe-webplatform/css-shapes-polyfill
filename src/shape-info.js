@@ -30,7 +30,7 @@ function createRoundedRectForInset(inset, margin) {
     var topRight = toSize(inset.radii[1]);
     var bottomRight = toSize(inset.radii[2]);
     var bottomLeft = toSize(inset.radii[3]);
-    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + margin, inset.height + margin)
+    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + 2 * margin, inset.height + 2 * margin)
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
@@ -53,7 +53,6 @@ function createPolygon(polygon, shapeMargin) {
     return new Polygon(polygon.points, polygon.fillRule, shapeMargin);
 }
 
-var foo;
 function createShapeGeometry(shapeValue, whenReady) {
     var shapeMargin = (shapeValue.shapeMargin === undefined) ? 0 : shapeValue.shapeMargin;
     var geometry;
@@ -67,7 +66,6 @@ function createShapeGeometry(shapeValue, whenReady) {
             break;
         case "inset":
             geometry = createRoundedRectForInset(shapeValue.shape, shapeMargin);
-           foo = geometry;
             if (!geometry.isRenderable())
                 geometry.adjustRadii();
             break;
@@ -143,11 +141,11 @@ ShapeInfo.prototype.computeStepOffsets = function(step) {
 
         // get the offset relative to the margin box
         if (this.metrics.cssFloat === 'left') {
-            offset = exclusionEdgeValue(this.rightExclusionEdge(lineBounds));
-            offset += this.shapeValue.box.x + this.metrics.margins[3];
+            offset = this.rightExclusionEdge(lineBounds);
+            offset = (offset === undefined ? 0 : offset + this.shapeValue.box.x + this.metrics.margins[3]);
         } else {
-            offset = exclusionEdgeValue(this.leftExclusionEdge(lineBounds));
-            offset = this.metrics.marginBox.width - (offset + this.shapeValue.box.x + this.metrics.margins[3]);
+            offset = this.leftExclusionEdge(lineBounds);
+            offset = (offset === undefined ? 0 : this.metrics.marginBox.width - (offset + this.shapeValue.box.x + this.metrics.margins[3]));
         }
 
         // push the margin box relative offsets
@@ -172,7 +170,9 @@ ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
     var result = [];
     var y = dy;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset = Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
+        var layoutOffset = offsets[i].x === undefined
+            ? 0
+            : Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
             ? offsets[i].x + dx
             : this.metrics.marginBox.width - (offsets[i].x + dx));
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
