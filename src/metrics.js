@@ -25,7 +25,7 @@ function Metrics(element) {
     var parseLength = function(length) { return length && length.length ? parseInt(length) : 0; }
     this.margins = [computedStyle.marginTop, computedStyle.marginRight, computedStyle.marginBottom, computedStyle.marginLeft];
     this.margins = this.margins.map(parseLength);
-    this.borders = [computedStyle.borderTop, computedStyle.borderRight, computedStyle.borderBottom, computedStyle.borderLeft];
+    this.borders = [computedStyle.borderTopWidth, computedStyle.borderRightWidth, computedStyle.borderBottomWidth, computedStyle.borderLeftWidth];
     this.borders = this.borders.map(parseLength);
     this.paddings = [computedStyle.paddingTop, computedStyle.paddingRight, computedStyle.paddingBottom, computedStyle.paddingLeft];
     this.paddings = this.paddings.map(parseLength);

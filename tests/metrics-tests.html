@@ -1,23 +1,19 @@
 <html>
 <head>
 <meta charset='utf-8'>
-<title>Shape Polyfill Tests</title>
+<title>Metrics Tests</title>
 <link rel='stylesheet' href='../node_modules/mocha/mocha.css'>
 </head>
 <body>
 <div id='mocha'></div>
 <script src='../node_modules/mocha/mocha.js'></script>
 <script src='../node_modules/chai/chai.js'></script>
-<script src='shape-info-tests.js'></script>
-<script src='../src/shape-info.js'></script>
 <script src='../src/metrics.js'></script>
-<script src='../src/shape-value.js'></script>
-<script src='../src/rect.js'></script>
-<script src='../src/polygon.js'></script>
+<script src='metrics-tests.js'></script>
 <script>
 mocha.checkLeaks();
 
-ShapeInfoTests.register(mocha, chai.expect);
+MetricsTests.register(mocha, chai.expect);
 
 mocha.run();
 </script>
