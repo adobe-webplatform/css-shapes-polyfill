@@ -132,9 +132,95 @@ function register(mocha, expect) {
             it("line overlaps polygon's bottom quarter", function() { checkExclusionEdgesWithRound(polygon, 75, 100, 11, 89)} );
         });
     });
+
+    describe("Polygon.left,rightExclusionEdge, left-base triangle", function() {
+        var vertices = createVertices([0,0, 100,50, 0,100]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 100); });
+            it("line overlaps triangle vertical extent, above", function() { checkExclusionEdges(polygon, -100, 50, 0, 100); });
+            it("line overlaps triangle vertical extent, below", function() { checkExclusionEdges(polygon, 50, 150, 0, 100); });
+            it("line contains triangle vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 100)} );
+            it("line overlaps triangle's top part", function() { checkExclusionEdges(polygon, 0, 10, 0, 20)} );
+            it("line overlaps triangle's middle part", function() { checkExclusionEdges(polygon, 40, 60, 0, 100)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdges(polygon, 90, 100, 0, 20)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 110); });
+            it("line equals triangle + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 110); });
+            it("line overlaps triangle's middle-left part", function() { checkExclusionEdgesWithRound(polygon, 0, 50, -10, 110)} );
+            it("line overlaps triangle's middle part", function() { checkExclusionEdges(polygon, 40, 70, -10, 110)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, -10, 102)} );
+        });
+    });
+
+    describe("Polygon.left,rightExclusionEdge, top-base triangle", function() {
+        var vertices = createVertices([0,0, 0,100, 50,100]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 50); });
+            it("line overlaps triangle vertical extent, above", function() { checkExclusionEdges(polygon, -100, 100, 0, 50); });
+            it("line overlaps triangle vertical extent, below", function() { checkExclusionEdges(polygon, 0, 200, 0, 50); });
+            it("line contains triangle vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 50)} );
+            it("line overlaps triangle's base part", function() { checkExclusionEdges(polygon, 0, 10, 0, 5)} );
+            it("line overlaps triangle's middle part", function() { checkExclusionEdges(polygon, 0, 50, 0, 25)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdges(polygon, 50, 100, 0, 50)} );
+        });
+        describe("shape-margin=5", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 60); });
+            it("line equals triangle + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 60); });
+            it("line overlaps triangle's middle part", function() { checkExclusionEdgesWithRound(polygon, 2, 6, -10, 14)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdges(polygon, 90, 100, -10, 60)} );
+        });
+    });
+
+    describe("Polygon.left,rightExclusionEdge, right-base triangle", function() {
+        var vertices = createVertices([100,0, 100,100, 0,50]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 100); });
+            it("line overlaps triangle vertical extent, above", function() { checkExclusionEdges(polygon, -100, 100, 0, 100); });
+            it("line overlaps triangle vertical extent, below", function() { checkExclusionEdges(polygon, 0, 200, 0, 100); });
+            it("line contains triangle vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 100)} );
+            it("line overlaps triangle's top part", function() { checkExclusionEdges(polygon, 0, 10, 80, 100)} );
+            it("line overlaps triangle's upper-middle part", function() { checkExclusionEdges(polygon, 10, 40, 20, 100)} );
+            it("line overlaps triangle's middle part", function() { checkExclusionEdges(polygon, 40, 60, 0, 100)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdges(polygon, 60, 100, 20, 100)} );
+        });
+        describe("shape-margin=5", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 110); });
+            it("line equals triangle + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 110); });
+            it("line overlaps triangle's top part", function() { checkExclusionEdgesWithRound(polygon, 2, 6, 66, 110)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdgesWithRound(polygon, 90, 100, 58, 110)} );
+        });
+    });
+
+    describe("Polygon.left,rightExclusionEdge, bottom-base triangle", function() {
+        var vertices = createVertices([50,0, 100,100, 0,100]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 100); });
+            it("line overlaps triangle vertical extent, above", function() { checkExclusionEdges(polygon, -100, 100, 0, 100); });
+            it("line overlaps triangle vertical extent, below", function() { checkExclusionEdges(polygon, 0, 200, 0, 100); });
+            it("line contains triangle vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 100)} );
+            it("line overlaps triangle's top part", function() { checkExclusionEdges(polygon, 0, 10, 45, 55)} );
+            it("line overlaps triangle's upper-middle part", function() { checkExclusionEdges(polygon, 10, 40, 30, 70)} );
+            it("line overlaps triangle's middle part", function() { checkExclusionEdges(polygon, 40, 60, 20, 80)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdges(polygon, 60, 100, 0, 100)} );
+        });
+        describe("shape-margin=5", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals triangle vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 110); });
+            it("line equals triangle + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 110); });
+            it("line overlaps triangle's top part", function() { checkExclusionEdgesWithRound(polygon, 2, 6, 36, 64)} );
+            it("line overlaps triangle's bottom part", function() { checkExclusionEdges(polygon, 90, 100, -10, 110)} );
+        });
+    });
 }
 
 return {'register': register};
 }();
-
-
