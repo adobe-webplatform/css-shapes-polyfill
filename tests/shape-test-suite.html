@@ -8,6 +8,7 @@
 <div id='mocha'></div>
 <script src='../node_modules/mocha/mocha.js'></script>
 <script src='../node_modules/chai/chai.js'></script>
+<script src='metrics-tests.js'></script>
 <script src='style-polyfill-tests.js'></script>
 <script src='shape-value-tests.js'></script>
 <script src='rect-tests.js'></script>
@@ -23,6 +24,8 @@
 <script src='../src/style-polyfill.js'></script>
 <script>
 mocha.checkLeaks();
+
+MetricsTests.register(mocha, chai.expect);
 
 StylePolyfillTests.register(mocha, chai.expect);
 
