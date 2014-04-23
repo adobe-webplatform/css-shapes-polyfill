@@ -358,6 +358,29 @@ function register(mocha, expect) {
             it("line overlaps parallelogram's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, 2, 105)} );
         });
     });
+
+    describe("Polygon.left,rightExclusionEdge, trapezoid", function() {
+        var vertices = createVertices([25,0, 50,0, 100,100, 0,100]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals trapezoid vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 100); });
+            it("line overlaps trapezoid vertical extent, above", function() { checkExclusionEdges(polygon, -100, 50, 12.5, 75); });
+            it("line overlaps trapezoid vertical extent, below", function() { checkExclusionEdges(polygon, 50, 150, 0, 100); });
+            it("line contains trapezoid vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 100)} );
+            it("line overlaps trapezoid's top part", function() { checkExclusionEdges(polygon, 0, 10, 22.5, 55)} );
+            it("line overlaps trapezoid's middle part", function() { checkExclusionEdges(polygon, 40, 60, 10, 80)} );
+            it("line overlaps trapezoid's bottom part", function() { checkExclusionEdges(polygon, 90, 100, 0, 100)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals trapezoid vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 110); });
+            it("line equals trapezoid + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 110); });
+            it("line overlaps trapezoid's upper-middle part", function() { checkExclusionEdgesWithRound(polygon, 20, 50, 2, 86)} );
+            it("line overlaps trapezoid's middle part", function() { checkExclusionEdgesWithRound(polygon, 40, 70, -3, 96)} );
+            it("line overlaps trapezoid's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, -4, 99)} );
+        });
+    });
 }
 
 return {'register': register};
