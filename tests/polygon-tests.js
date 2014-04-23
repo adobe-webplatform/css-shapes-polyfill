@@ -335,6 +335,29 @@ function register(mocha, expect) {
             it("line overlaps five-pointed-star's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, -20, 120)} );
         });
     });
+
+    describe("Polygon.left,rightExclusionEdge, parallelogram", function() {
+        var vertices = createVertices([0,0, 80,0, 100,100, 20,100]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals parallelogram vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 100); });
+            it("line overlaps parallelogram vertical extent, above", function() { checkExclusionEdges(polygon, -100, 50, 0, 90); });
+            it("line overlaps parallelogram vertical extent, below", function() { checkExclusionEdges(polygon, 50, 150, 10, 100); });
+            it("line contains parallelogram vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 100)} );
+            it("line overlaps parallelogram's top part", function() { checkExclusionEdges(polygon, 0, 10, 0, 82)} );
+            it("line overlaps parallelogram's middle part", function() { checkExclusionEdges(polygon, 40, 60, 8, 92)} );
+            it("line overlaps parallelogram's bottom part", function() { checkExclusionEdges(polygon, 90, 100, 18, 100)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals parallelogram vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 110); });
+            it("line equals parallelogram + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 110); });
+            it("line overlaps parallelogram's upper-middle part", function() { checkExclusionEdgesWithRound(polygon, 20, 50, -6, 100)} );
+            it("line overlaps parallelogram's middle part", function() { checkExclusionEdgesWithRound(polygon, 40, 70, -2, 104)} );
+            it("line overlaps parallelogram's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, 2, 105)} );
+        });
+    });
 }
 
 return {'register': register};
