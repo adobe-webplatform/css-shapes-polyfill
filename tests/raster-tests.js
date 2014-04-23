@@ -32,6 +32,28 @@ function register(mocha, expect) {
         it("raster image height", function() { expect(raster.image.height).to.equal(100); });
         it("raster intervals is not null", function() { expect(raster.intervals).not.null; });
     });
+
+    describe("Image.left,rightExclusionEdge, (50x100px opaque,50x100px transparent) image", function() {
+        describe("shape-margin=0", function() {
+            var image = createRaster("./resources/half-rectangle.png", 0, 0);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 50); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -100, 50, 0, 50); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 50, 150, 0, 50); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -100, 200, 0, 50)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 50)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 0, 50)} );
+            it("line is above the image", function() { checkExclusionEdges(image, -50, -30, undefined, undefined)} );
+            it("line is below the image", function() { checkExclusionEdges(image, 101, 109, undefined, undefined)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image = createRaster("./resources/half-rectangle.png", 0, 10);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, -10, 60); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 110, -10, 60); });
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, -10, 60)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, -10, 60)} );
+        });
+    });
 }
 
 return {'register': register};
