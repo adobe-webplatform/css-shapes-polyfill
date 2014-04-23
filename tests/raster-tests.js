@@ -33,7 +33,7 @@ function register(mocha, expect) {
         it("raster intervals is not null", function() { expect(raster.intervals).not.null; });
     });
 
-    describe("Image.left,rightExclusionEdge, (50x100px opaque,50x100px transparent) image", function() {
+    describe("Image.left,rightExclusionEdge, (50x100px opaque, 50x100px transparent)", function() {
         describe("shape-margin=0", function() {
             var image = createRaster("./resources/half-rectangle.png", 0, 0);
             it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 50); });
