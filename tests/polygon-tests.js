@@ -381,6 +381,29 @@ function register(mocha, expect) {
             it("line overlaps trapezoid's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, -4, 99)} );
         });
     });
+
+    describe("Polygon.left,rightExclusionEdge, five-pointed-star", function() {
+        var vertices = createVertices([0,33, 100,33, 20,100, 50,0, 80,100]);
+        describe("shape-margin=0", function() {
+            var polygon = new Polygon(vertices, "evenodd", 0);
+            it("line equals five-pointed-star vertical extent", function() { checkExclusionEdges(polygon, 0, 100, 0, 100); });
+            it("line overlaps five-pointed-star vertical extent, above", function() { checkExclusionEdges(polygon, -100, 50, 0, 100); });
+            it("line overlaps five-pointed-star vertical extent, below", function() { checkExclusionEdges(polygon, 50, 150, 20, 80); });
+            it("line contains five-pointed-star vertical extent", function() { checkExclusionEdges(polygon, -100, 200, 0, 100)} );
+            it("line overlaps five-pointed-star's top part", function() { checkExclusionEdges(polygon, 0, 10, 47, 53)} );
+            it("line overlaps five-pointed-star's middle part", function() { checkExclusionEdges(polygon, 30, 60, 0, 100)} );
+            it("line overlaps five-pointed-star's bottom part", function() { checkExclusionEdges(polygon, 90, 100, 20, 80)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var polygon = new Polygon(vertices, "evenodd", 10);
+            it("line equals five-pointed-star vertical extent", function() { checkExclusionEdges(polygon, 0, 100, -10, 110); });
+            it("line equals five-pointed-star + shape-margin vertical extent", function() { checkExclusionEdges(polygon, -10, 110, -10, 110); });
+            it("line overlaps five-pointed-star's upper-middle part", function() { checkExclusionEdgesWithRound(polygon, 20, 50, -10, 110)} );
+            it("line overlaps five-pointed-star's middle part", function() { checkExclusionEdgesWithRound(polygon, 30, 60, -10, 110)} );
+            it("line overlaps five-pointed-star's bottom part", function() { checkExclusionEdgesWithRound(polygon, 60, 75, 17, 83)} );
+        });
+    });
 }
 
 return {'register': register};
