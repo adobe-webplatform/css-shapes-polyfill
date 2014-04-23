@@ -648,7 +648,7 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
             if (startX == -1 && alpha > threshold) {
                 startX = x;
                 if (intervals.intervalAt(y) === RasterIntervals.none)
-                    intervals.setIntervalAt(y, new RasterInterval(y, startX, this.width - 1));
+                    intervals.setIntervalAt(y, new RasterInterval(y, startX, this.width));
             } else if (startX != -1 && alpha <= threshold) {
                 intervals.intervalAt(y).endX = x;
                 startX = -1;
