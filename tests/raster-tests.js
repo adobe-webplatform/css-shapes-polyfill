@@ -164,6 +164,94 @@ function register(mocha, expect) {
             it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, -10, 110)} );
         });
     });
+
+    describe("Image.left,rightExclusionEdge, top-left triangle", function() {
+        describe("shape-margin=0", function() {
+            var image = createRaster("./resources/top-left-triangle.png", 0, 0);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 100); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -100, 50, 0, 100); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 50, 150, 0, 50); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -100, 200, 0, 100)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 100)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdges(image, 40, 60, 0, 60)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 0, 25)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image = createRaster("./resources/top-left-triangle.png", 0, 10);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, -10, 110); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 110, -10, 110); });
+            it("line overlaps image's top part", function() { checkExclusionEdgesWithRound(image, 0, 25, -10, 110)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdgesWithRound(image, 40, 60, -10, 74)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdgesWithRound(image, 75, 100, -10, 39)} );
+        });
+    });
+
+    describe("Image.left,rightExclusionEdge, top-right triangle", function() {
+        describe("shape-margin=0", function() {
+            var image = createRaster("./resources/top-right-triangle.png", 0, 0);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 100); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -100, 50, 0, 100); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 50, 150, 50, 100); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -100, 200, 0, 100)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 100)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdges(image, 40, 60, 40, 100)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 75, 100)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image = createRaster("./resources/top-right-triangle.png", 0, 10);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, -10, 110); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 110, -10, 110); });
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, -10, 110)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdgesWithRound(image, 40, 60, 26, 110)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdgesWithRound(image, 75, 100, 61, 110)} );
+        });
+    });
+
+    describe("Image.left,rightExclusionEdge, bottom-right triangle", function() {
+        describe("shape-margin=0", function() {
+            var image = createRaster("./resources/bottom-right-triangle.png", 0, 0);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 100); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -100, 50, 49, 100); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 50, 150, 0, 100); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -100, 200, 0, 100)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 74, 100)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdges(image, 40, 60, 39, 100)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 0, 100)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image = createRaster("./resources/bottom-right-triangle.png", 0, 10);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, -10, 110); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 110, -10, 110); });
+            it("line overlaps image's top part", function() { checkExclusionEdgesWithRound(image, 0, 25, 60, 110)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdgesWithRound(image, 40, 60, 25, 110)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdgesWithRound(image, 75, 100, -10, 110)} );
+        });
+    });
+
+    describe("Image.left,rightExclusionEdge, bottom-left triangle", function() {
+        describe("shape-margin=0", function() {
+            var image = createRaster("./resources/bottom-left-triangle.png", 0, 0);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 100); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -100, 50, 0, 51); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 50, 150, 0, 100); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -100, 200, 0, 100)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 26)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdges(image, 40, 60, 0, 61)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 0, 100)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image = createRaster("./resources/bottom-left-triangle.png", 0, 10);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, -10, 110); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 110, -10, 110); });
+            it("line overlaps image's top part", function() { checkExclusionEdgesWithRound(image, 0, 25, -10, 40)} );
+            it("line overlaps image's middle part", function() { checkExclusionEdgesWithRound(image, 40, 60, -10, 75)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, -10, 110)} );
+        });
+    });
 }
 
 return {'register': register};
