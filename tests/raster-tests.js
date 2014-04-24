@@ -121,6 +121,28 @@ function register(mocha, expect) {
         });
     });
 
+    describe("Image.left,rightExclusionEdge, (50x100px opaque, 50x100px 20% opacity)", function() {
+        describe("shape-margin=0; shape-image-threshold=0.19 (no wrapping)", function() {
+            var image = createRaster("./resources/half-rectangle-20.png", 0.19, 0);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 100); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -100, 50, 0, 100); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 50, 150, 0, 100); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -100, 200, 0, 100)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 100)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 0, 100)} );
+            it("line is above the image", function() { checkExclusionEdges(image, -50, -30, undefined, undefined)} );
+            it("line is below the image", function() { checkExclusionEdges(image, 101, 109, undefined, undefined)} );
+        });
+
+        describe("shape-margin=10; shape-image-threshold=0.19 (no wrapping)", function() {
+            var image = createRaster("./resources/half-rectangle-20.png", 0.19, 10);
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, -10, 110); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 110, -10, 110); });
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, -10, 110)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, -10, 110)} );
+        });
+    });
+
     describe("Image.left,rightExclusionEdge, no outside transparency", function() {
         describe("shape-margin=0", function() {
             var image = createRaster("./resources/no-outside-alpha.png", 0, 0);
