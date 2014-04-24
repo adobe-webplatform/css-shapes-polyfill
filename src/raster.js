@@ -145,7 +145,7 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
 
 function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.url = url;
-    this.shapeImageThreshold = shapeImageThreshold;
+    this.shapeImageThreshold = (256 * shapeImageThreshold);
     this.shapeMargin = shapeMargin;
     this.image = new Image();
     this.clip = clip;
