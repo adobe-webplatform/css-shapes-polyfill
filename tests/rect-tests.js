@@ -19,12 +19,92 @@ function register(mocha, expect) {
         name: 'Rounded Rectangle Edges',
         tests: [
         {
+            rectangle: [0, 0, 100, 100, [0, 0], [0, 0], [0, 0], [0, 0]],
+            y1: 10,
+            y2: 30,
+            renderable: true,
+            left: 0,
+            right: 100
+        },
+        {
             rectangle: [0, 0, 100, 100, [50, 50], [50, 50], [50, 50], [50, 50]],
             y1: 0,
             y2: 0,
             renderable: true,
             left: 50,
             right: 50
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 50], [50, 50], [50, 50], [50, 50]],
+            y1: 5,
+            y2: 10,
+            renderable: true,
+            left: 20,
+            right: 80
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 50], [50, 50], [50, 50], [50, 50]],
+            y1: 50,
+            y2: 50,
+            renderable: true,
+            left: 0,
+            right: 100
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 50], [50, 50], [50, 50], [50, 50]],
+            y1: 90,
+            y2: 95,
+            renderable: true,
+            left: 20,
+            right: 80
+        },
+        {
+            rectangle: [0, 0, 100, 100, [30, 70], [30, 70], [30, 30], [30, 30]],
+            y1: 10,
+            y2: 14,
+            renderable: true,
+            left: 12,
+            right: 88
+        },
+        {
+            rectangle: [0, 0, 100, 100, [30, 30], [30, 30], [30, 70], [30, 70]],
+            y1: 86,
+            y2: 90,
+            renderable: true,
+            left: 12,
+            right: 88
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 30], [50, 30], [30, 50], [30, 50]],
+            y1: 45,
+            y2: 50,
+            renderable: true,
+            left: 0,
+            right: 100
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 30], [50, 30], [30, 50], [30, 50]],
+            y1: 6,
+            y2: 6,
+            renderable: true,
+            left: 20,
+            right: 80
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 30], [50, 30], [30, 50], [30, 50]],
+            y1: 90,
+            y2: 90,
+            renderable: true,
+            left: 12,
+            right: 88
+        },
+        {
+            rectangle: [0, 0, 100, 100, [50, 30], [50, 30], [30, 50], [30, 50]],
+            y1: 50,
+            y2: 55,
+            renderable: true,
+            left: 0,
+            right: 100
         },
         {
             rectangle: [25, 25, 50, 50, [25, 25], [25, 25], [25, 25], [25, 25]],
