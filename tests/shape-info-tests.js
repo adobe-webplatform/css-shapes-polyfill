@@ -58,10 +58,13 @@ function register(mocha, expect) {
                 { top: 40, bottom: 60, offset: 180, cssFloat: 'left' },
                 { top: 60, bottom: 80, offset: 180, cssFloat: 'left' },
                 { top: 80, bottom: 100, offset: 180, cssFloat: 'left' },
-                { top: 100, bottom: 120, offset: 0, cssFloat: 'left' }
+                { top: 100, bottom: 120, offset: 180, cssFloat: 'left' },
+                { top: 120, bottom: 140, offset: 180, cssFloat: 'left' },
+                { top: 140, bottom: 160, offset: 180, cssFloat: 'left' },
+                { top: 160, bottom: 180, offset: 180, cssFloat: 'left' },
+                { top: 180, bottom: 200, offset: 0, cssFloat: 'left' }
             ]
         },
-
         {
             name: 'for inset with shape-margin applied',
             shapeOutside: 'inset(31px 30px)',
