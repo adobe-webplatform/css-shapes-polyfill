@@ -28,8 +28,6 @@ function register(mocha, expect) {
         it("raster set shapeImageThreshold", function() { expect(raster.shapeImageThreshold).to.equal(0); });
         it("raster set shapeMargin", function() { expect(raster.shapeMargin).to.equal(0); });
         it("raster clip rectangle", function() { expect(raster.clip).not.null; });
-        it("raster image width", function() { expect(raster.image.width).to.equal(100); });
-        it("raster image height", function() { expect(raster.image.height).to.equal(100); });
         it("raster intervals is not null", function() { expect(raster.intervals).not.null; });
     });
 
