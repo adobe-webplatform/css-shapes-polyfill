@@ -66,6 +66,27 @@ function register(mocha, expect) {
             ]
         },
         {
+            name: 'for border-box',
+            shapeOutside: 'boder-box',
+            styles: {
+                border: '30px',
+                borderColor: 'black',
+                borderStyle: 'solid',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 140, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 140, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 140, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 140, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 140, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 140, cssFloat: 'left' },
+                { top: 120, bottom: 140, offset: 140, cssFloat: 'left' }
+            ]
+        },
+        {
             name: 'for inset with shape-margin applied',
             shapeOutside: 'inset(31px 30px)',
             shapeMargin: '10px',
