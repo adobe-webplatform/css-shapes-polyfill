@@ -51,14 +51,10 @@ function register(mocha, expect) {
                 width: '80px',
                 height: '80px',
             },
-            step: 20,
+            step: 90,
             output: [
-                { top: 0, bottom: 20, offset: 180, cssFloat: 'left' },
-                { top: 20, bottom: 40, offset: 180, cssFloat: 'left' },
-                { top: 40, bottom: 60, offset: 180, cssFloat: 'left' },
-                { top: 60, bottom: 80, offset: 180, cssFloat: 'left' },
-                { top: 80, bottom: 100, offset: 180, cssFloat: 'left' },
-                { top: 100, bottom: 120, offset: 0, cssFloat: 'left' }
+                { top: 0, bottom: 90, offset: 180, cssFloat: 'left' },
+                { top: 90, bottom: 180, offset: 180, cssFloat: 'left' }
             ]
         },
 
