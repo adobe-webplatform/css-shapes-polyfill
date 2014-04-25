@@ -97,6 +97,26 @@ function register(mocha, expect) {
             ]
         },
         {
+            name: 'for padding-box (20px border, padding)',
+            shapeOutside: 'padding-box',
+            styles: {
+                padding: '19px 20px',
+                borderWidth: '21px 20px',
+                borderStyle: 'solid',
+                width: '20px',
+                height: '20px',
+                'shape-outside': 'padding-box'
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 0, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 80, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 80, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 80, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 0, cssFloat: 'left' },
+            ]
+        },
+        {
             name: 'for padding-box (21px margin)',
             shapeOutside: 'padding-box',
             styles: {
@@ -136,9 +156,9 @@ function register(mocha, expect) {
             // If the line and shape both overlap at 20px, even coincidentally,
             // they will avoid each other, so tweak them slightly
             styles: {
-                padding: '21px',
-                width: '79px',
-                height: '79px',
+                padding: '21px 20px',
+                width: '80px',
+                height: '78px',
             },
             step: 20,
             output: [
