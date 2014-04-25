@@ -40,7 +40,8 @@ function createRoundedRectForBox(box, margin) {
         topRight = toSize(box.radii[1]),
         bottomRight = toSize(box.radii[2]),
         bottomLeft = toSize(box.radii[3]);
-    var rect = new Rect(box.x - margin, box.y - margin, box.width + 2 * margin, box.height + 2 * margin);
+    // This box is at 0,0 relative to its sizing box (itself)
+    var rect = new Rect(-margin, -margin, box.width + 2 * margin, box.height + 2 * margin);
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
