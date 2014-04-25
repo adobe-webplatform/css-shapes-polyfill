@@ -660,7 +660,7 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
 
 function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.url = url;
-    this.shapeImageThreshold = shapeImageThreshold;
+    this.shapeImageThreshold = (256 * shapeImageThreshold);
     this.shapeMargin = shapeMargin;
     this.image = new Image();
     this.clip = clip;
@@ -1066,7 +1066,8 @@ function createRoundedRectForBox(box, margin) {
         topRight = toSize(box.radii[1]),
         bottomRight = toSize(box.radii[2]),
         bottomLeft = toSize(box.radii[3]);
-    var rect = new Rect(box.x - margin, box.y - margin, box.width + 2 * margin, box.height + 2 * margin);
+    // This box is at 0,0 relative to its sizing box (itself)
+    var rect = new Rect(-margin, -margin, box.width + 2 * margin, box.height + 2 * margin);
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
@@ -1254,28 +1255,33 @@ function fakeIt(element, offsets) {
         position: 'relative',
         width: 'auto',
         height: '0',
-        clear: 'both'
+        clear: 'both',
+        'z-index': '-1' // Absolutely positioning the child normally forces it to the top
     };
 
     for (prop in styles)
         wrapper.style[prop] = styles[prop];
 
-    if (element.parentNode)
-        element.parentNode.insertBefore(wrapper, element);
+    var parent = element.parentNode, subwrapper,
+        computedStyle = getComputedStyle(parent),
+        borderHeight = parseFloat(computedStyle.borderTop) + parseFloat(computedStyle.borderBottom);
 
     styles = {
         position: 'absolute',
         top: '0',
-        float: 'none',
-        width: element.clientWidth + 'px',
-        height: element.clientHeight + 'px',
+        width: 'auto', // will fill the whole width
+        height: parent.clientHeight - borderHeight,
+        left: '0'
     }
-    styles[offsets[0].cssFloat] = '0';
 
-    wrapper.appendChild(element);
-
+    subwrapper = document.createElement('div');
     for (prop in styles)
-        element.style[prop] = styles[prop];
+        subwrapper.style[prop] = styles[prop];
+    wrapper.appendChild(subwrapper);
+
+    if (element.parentNode)
+        element.parentNode.insertBefore(wrapper, element);
+    subwrapper.appendChild(element);
 
     wrapper.setAttribute('data-shape-outside-container', 'true');
 }
@@ -1304,11 +1310,12 @@ Polyfill.prototype.polyfill = function(element, settings) {
 
 Polyfill.prototype.removePolyfill = function(element) {
     var oldParent = element.parentNode;
-    if (!oldParent.hasAttribute('data-shape-outside-container'))
-        return;
+    for (oldParent = element.parentNode
+        ; !oldParent || !oldParent.hasAttribute('data-shape-outside-container')
+        ; oldParent = oldParent.parentNode);
 
-    var properties = [ 'position', 'top', 'float', 'width', 'height', 'left', 'right' ];
-    properties.forEach(function(property) { element.style.removeProperty(property); });
+    if (!oldParent)
+        return;
 
     oldParent.parentNode.insertBefore(element, oldParent);
     oldParent.parentNode.removeChild(oldParent);
