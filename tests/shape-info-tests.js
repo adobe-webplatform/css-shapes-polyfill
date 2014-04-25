@@ -97,6 +97,25 @@ function register(mocha, expect) {
             ]
         },
         {
+            name: 'for padding-box (21px margin)',
+            shapeOutside: 'padding-box',
+            styles: {
+                padding: '20px',
+                margin: '21px',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 0, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 141, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 141, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 141, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 141, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 141, cssFloat: 'left' }
+            ]
+        },
+        {
             name: 'for content-box',
             shapeOutside: 'content-box',
             styles: {
