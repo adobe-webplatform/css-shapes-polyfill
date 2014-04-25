@@ -114,10 +114,12 @@ function register(mocha, expect) {
         {
             name: 'for content-box (20px padding)',
             shapeOutside: 'content-box',
+            // If the line and shape both overlap at 20px, even coincidentally,
+            // they will avoid each other, so tweak them slightly
             styles: {
-                padding: '20px',
-                width: '80px',
-                height: '80px',
+                padding: '21px',
+                width: '79px',
+                height: '79px',
             },
             step: 20,
             output: [
