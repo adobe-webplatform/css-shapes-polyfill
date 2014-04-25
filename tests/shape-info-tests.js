@@ -57,7 +57,78 @@ function register(mocha, expect) {
                 { top: 90, bottom: 180, offset: 180, cssFloat: 'left' }
             ]
         },
-
+        {
+            name: 'for border-box',
+            shapeOutside: 'boder-box',
+            styles: {
+                border: '30px',
+                borderColor: 'black',
+                borderStyle: 'solid',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 140, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 140, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 140, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 140, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 140, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 140, cssFloat: 'left' },
+                { top: 120, bottom: 140, offset: 140, cssFloat: 'left' }
+            ]
+        },
+        {
+            name: 'for padding-box',
+            shapeOutside: 'padding-box',
+            styles: {
+                padding: '20px',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 120, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 120, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 120, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 120, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 120, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 120, cssFloat: 'left' }
+            ]
+        },
+        {
+            name: 'for content-box',
+            shapeOutside: 'content-box',
+            styles: {
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 80, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 80, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 80, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 80, cssFloat: 'left' },
+            ]
+        },
+        {
+            name: 'for content-box (20px padding)',
+            shapeOutside: 'content-box',
+            styles: {
+                padding: '20px',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 0, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 100, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 100, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 100, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 100, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 0, cssFloat: 'left' },
+            ]
+        },
         {
             name: 'for inset with shape-margin applied',
             shapeOutside: 'inset(31px 30px)',
