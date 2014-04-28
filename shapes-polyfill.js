@@ -1453,6 +1453,16 @@ function adjustBounds(bounds, sign, offsets) {
     bounds.height += sign * (top + bottom);
 }
 
+// See http://dev.w3.org/csswg/css-shapes/#margin-box
+function adjustRadius(radius, sign, offset) {
+    if (sign < 0)
+        return Math.max(radius + sign * offset, 0);
+    var ratio = Math.abs(radius / offset);
+    if (ratio < 1)
+        return Math.max(radius + offset * (1 + Math.pow(ratio - 1, 3)), 0);
+    return radius + offset;
+}
+
 function adjustRadii(radii, sign, offsets) {
     var top = offsets.reduce(function(prev, curr) { return prev + curr[0]; }, 0);
     var right = offsets.reduce(function(prev, curr) { return prev + curr[1]; }, 0);
@@ -1460,17 +1470,17 @@ function adjustRadii(radii, sign, offsets) {
     var left = offsets.reduce(function(prev, curr) { return prev + curr[3]; }, 0);
 
     // Still need to max these with 0
-    radii[0][0] = Math.max(radii[0][0] + sign * left, 0);
-    radii[0][1] = Math.max(radii[0][1] + sign * top, 0);
+    radii[0][0] = adjustRadius(radii[0][0], sign, left);
+    radii[0][1] = adjustRadius(radii[0][1], sign, top);
 
-    radii[1][0] = Math.max(radii[1][0] + sign * right, 0);
-    radii[1][1] = Math.max(radii[1][1] + sign * top, 0);
+    radii[1][0] = adjustRadius(radii[1][0], sign, right);
+    radii[1][1] = adjustRadius(radii[1][1], sign, top);
 
-    radii[2][0] = Math.max(radii[2][0] + sign * right, 0);
-    radii[2][1] = Math.max(radii[2][1] + sign * bottom, 0);
+    radii[2][0] = adjustRadius(radii[2][0], sign, right);
+    radii[2][1] = adjustRadius(radii[2][1], sign, bottom);
 
-    radii[3][0] = Math.max(radii[3][0] + sign * left, 0);
-    radii[3][1] = Math.max(radii[3][1] + sign * bottom, 0);
+    radii[3][0] = adjustRadius(radii[3][0], sign, left);
+    radii[3][1] = adjustRadius(radii[3][1], sign, bottom);
 }
 
 ShapeValue.prototype.parseBox = function(text, metrics) {

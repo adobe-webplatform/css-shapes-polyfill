@@ -150,7 +150,7 @@ function register(mocha, expect) {
         {
             name: 'margin-box',
             input: 'margin-box',
-            output: 'margin-box { x: -20, y: -5, width: 130, height: 120, radii: 30 30 40 60 / 15 25 45 55 }'
+            output: 'margin-box { x: -20, y: -5, width: 130, height: 120, radii: 27.5 30 40 60 / 15 25 45 55 }'
         },
         {
             name: 'border-box',
@@ -199,7 +199,7 @@ function register(mocha, expect) {
             name: 'circle() margin-box',
             input: 'circle() margin-box',
             shape: 'circle(60 at 65 60)',
-            box: 'margin-box { x: -20, y: -5, width: 130, height: 120, radii: 30 30 40 60 / 15 25 45 55 }'
+            box: 'margin-box { x: -20, y: -5, width: 130, height: 120, radii: 27.5 30 40 60 / 15 25 45 55 }'
         },
         {
             name: 'circle() border-box',
