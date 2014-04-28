@@ -103,6 +103,30 @@ function register(mocha, expect) {
             ]
         },
         {
+            name: 'for border-box (+ margin)',
+            shapeOutside: 'border-box',
+            styles: {
+                margin: '11px 22px 33px 44px',
+                border: '30px',
+                borderColor: 'black',
+                borderStyle: 'solid',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 184, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 184, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 184, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 184, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 184, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 184, cssFloat: 'left' },
+                { top: 120, bottom: 140, offset: 184, cssFloat: 'left' },
+                { top: 140, bottom: 160, offset: 184, cssFloat: 'left' },
+                { top: 160, bottom: 180, offset: 0, cssFloat: 'left' }
+            ]
+        },
+        {
             name: 'for padding-box',
             shapeOutside: 'padding-box',
             styles: {
