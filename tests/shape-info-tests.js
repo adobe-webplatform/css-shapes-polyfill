@@ -59,7 +59,7 @@ function register(mocha, expect) {
         },
         {
             name: 'for border-box',
-            shapeOutside: 'boder-box',
+            shapeOutside: 'border-box',
             styles: {
                 border: '30px',
                 borderColor: 'black',
