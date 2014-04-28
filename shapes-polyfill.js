@@ -634,7 +634,11 @@ function RasterImage(image) {
     canvas.height = this.height;
     var g = canvas.getContext("2d");
     g.drawImage(image, 0, 0);
-    this.imageData = g.getImageData(0, 0, this.width, this.height); // row major byte array of pixels, 4 bytes per pixel: RGBA
+    try {
+        this.imageData = g.getImageData(0, 0, this.width, this.height); // row major byte array of pixels, 4 bytes per pixel: RGBA
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; }
@@ -666,11 +670,20 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.clip = clip;
 
     var raster = this;
-    this.image.onload = function() {
-        initRaster(raster, clip);
+    this.image.onload = function(event) {
+        try {
+            initRaster(raster, clip);
+        } catch(e) {
+            console.error("An error occurred while loading the image ", url, e);
+        }
         whenReady();
     };
-    // FIXME: deal with image load errors - this.image.onerror = function() {...}
+
+    this.image.onerror = function() {
+        // FIXME: We need more graceful error handling, but this will do for now
+        console.error("Unable to load the image ", url);
+    }
+
     this.image.src = url;
 }
 
