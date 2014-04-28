@@ -156,18 +156,17 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
 
     var raster = this;
     this.image.onload = function(event) {
-        console.log('load complete');
         try {
             initRaster(raster, clip);
         } catch(e) {
-            console.log("A problem occurred");
+            console.error("An error occurred while loading the image ", url, e);
         }
         whenReady();
     };
 
     this.image.onerror = function() {
-        console.error("Failed to load image: " + url);
         // FIXME: We need more graceful error handling, but this will do for now
+        console.error("Unable to load the image ", url);
     }
 
     this.image.src = url;
