@@ -1269,7 +1269,7 @@ function fakeIt(element, offsets) {
     styles = {
         position: 'absolute',
         top: '0',
-        width: 'auto', // will fill the whole width
+        width: '100%', // will fill the whole width, FF does 'auto' differently
         height: parent.clientHeight - borderHeight,
         left: '0'
     }
