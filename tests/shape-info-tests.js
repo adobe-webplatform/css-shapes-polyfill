@@ -65,7 +65,7 @@ function register(mocha, expect) {
                 { top: 100, bottom: 120, offset: 170, cssFloat: 'left' },
                 { top: 120, bottom: 140, offset: 170, cssFloat: 'left' },
                 { top: 140, bottom: 160, offset: 170, cssFloat: 'left' },
-                { top: 160, bottom: 180, offset: 170, cssFloat: 'left' }
+                { top: 160, bottom: 170, offset: 170, cssFloat: 'left' }
             ]
         },
         {

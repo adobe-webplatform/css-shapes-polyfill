@@ -231,8 +231,8 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         });
     }
 
-    result['x'] = box.x + result.insets[3];
-    result['y'] = box.y + result.insets[0];
+    result['x'] = result.insets[3];
+    result['y'] = result.insets[0];
     result.width = box.width - (result.insets[1] + result.insets[3]);
     result.height = box.height - (result.insets[0] + result.insets[2]);
 
