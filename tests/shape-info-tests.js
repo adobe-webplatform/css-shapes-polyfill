@@ -69,6 +69,31 @@ function register(mocha, expect) {
             ]
         },
         {
+            name: 'for inset on the border-box + (padding & border & margin)',
+            shapeOutside: 'inset(0px) border-box',
+            styles: {
+                padding: '10px',
+                border: '15px',
+                borderColor: 'black',
+                borderStyle: 'solid',
+                margin: '20px',
+                width: '80px',
+                height: '80px',
+            },
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 150, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 150, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 150, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 150, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 150, cssFloat: 'left' },
+                { top: 100, bottom: 120, offset: 150, cssFloat: 'left' },
+                { top: 120, bottom: 140, offset: 150, cssFloat: 'left' },
+                { top: 140, bottom: 160, offset: 150, cssFloat: 'left' },
+                { top: 160, bottom: 170, offset: 0, cssFloat: 'left' }
+            ]
+        },
+        {
             name: 'for margin-box',
             shapeOutside: 'margin-box',
             styles: {
