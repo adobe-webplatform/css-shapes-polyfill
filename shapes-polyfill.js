@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-!function(scope) {
+;(function(scope) {
 "use strict";
 
 function Metrics(element) {
@@ -25,7 +25,7 @@ function Metrics(element) {
 
     // Used values already in px, but may be "" in some browsers, eg FF
     // These values are stored in their CSS order top, right, bottom, left
-    var parseLength = function(length) { return length && length.length ? parseInt(length) : 0; }
+    var parseLength = function(length) { return length && length.length ? parseInt(length) : 0; };
     this.margins = [computedStyle.marginTop, computedStyle.marginRight, computedStyle.marginBottom, computedStyle.marginLeft];
     this.margins = this.margins.map(parseLength);
     this.borders = [computedStyle.borderTopWidth, computedStyle.borderRightWidth, computedStyle.borderBottomWidth, computedStyle.borderLeftWidth];
@@ -70,7 +70,7 @@ Metrics.prototype.unitToPx = function(unit) {
     this.units[unit] = parseFloat(getComputedStyle(this.element).getPropertyValue('line-height'));
     this.element.style.setProperty('line-height', cached);
     return this.units[unit];
-}
+};
 
 Metrics.prototype.getUnitsMap = function(element) {
     var units = ['em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', 'cm', 'mm', 'in', 'px', 'pt', 'pc'];
@@ -91,7 +91,7 @@ Metrics.prototype.getUnitsMap = function(element) {
     child.parentNode.removeChild(child);
 
     return result;
-}
+};
 
 Metrics.prototype.toPixels = function(length, percentageBase) {
     var split = /([\-0-9\.]*)([a-z%]*)/.exec(length);
@@ -101,7 +101,7 @@ Metrics.prototype.toPixels = function(length, percentageBase) {
     if (split[2] === '%')
         return split[1] * percentageBase / 100;
     return split[1] * this.unitToPx(split[2]);
-}
+};
 
 /* Returns > 0 if the slope of the line through origin and endPoint2 is greater than the slope through 
  * origin and endPoint1. Returns 0 if they have the same slope, negative otherwise.
@@ -115,14 +115,14 @@ function areCollinearPoints(p0, p1, p2) {
 }
 
 function areCoincidentPoints(p0, p1) { 
-    return p0.x == p1.x && p0.y == p1.y 
+    return p0.x == p1.x && p0.y == p1.y;
 }
 
 function isPointOnLineSegment(lineStartPoint, lineEndPoint, point)
 {
-    return point.x >= Math.min(lineStartPoint.x, lineEndPoint.x)
-        && point.x <= Math.max(lineStartPoint.x, lineEndPoint.x)
-        && areCollinearPoints(lineStartPoint, lineEndPoint, point);
+    return point.x >= Math.min(lineStartPoint.x, lineEndPoint.x) &&
+        point.x <= Math.max(lineStartPoint.x, lineEndPoint.x) &&
+        areCollinearPoints(lineStartPoint, lineEndPoint, point);
 }
 
 function PolygonEdge(polygon, vertex1Index, vertex2Index, edgeIndex) {
@@ -150,19 +150,19 @@ Object.defineProperty(PolygonEdge.prototype, "maxX", {
 
 PolygonEdge.prototype.containsPoint = function(point) {
     return isPointOnLineSegment(this.vertex1, this.vertex2, point);
-}
+};
 
 PolygonEdge.prototype.overlapsYRange = function(y1, y2) { // y range: y1 <= y <= y2
     var edgeY1 = this.vertex1.y;
     var edgeY2 = this.vertex2.y;
     return y2 >= Math.min(edgeY1, edgeY2) && y1 <= Math.max(edgeY1, edgeY2);
-}
+};
 
 PolygonEdge.prototype.isWithinYRange = function(y1, y2) { // y range: y1 <= y <= y2
     var edgeY1 = this.vertex1.y;
     var edgeY2 = this.vertex2.y;
     return y1 <= Math.min(edgeY1, edgeY2) && y2 >= Math.max(edgeY1, edgeY2);
-}
+};
 
 PolygonEdge.prototype.inwardNormal = function()
 {
@@ -171,13 +171,13 @@ PolygonEdge.prototype.inwardNormal = function()
     var dy = this.vertex2.y - this.vertex1.y;
     var edgeLength = Math.sqrt(dx*dx + dy*dy);
     return {x: -dy/edgeLength, y: dx/edgeLength};
-}
+};
 
 PolygonEdge.prototype.outwardNormal = function()
 {
     var n = this.inwardNormal();
     return {x: -n.x, y: -n.y};
-}
+};
 
 PolygonEdge.prototype.xIntercept = function(y) {
     var vertex1Y = this.vertex1.y;
@@ -193,7 +193,7 @@ PolygonEdge.prototype.xIntercept = function(y) {
         return (vertex1Y > vertex2Y) ? this.vertex1.x : this.vertex2.x;
 
     return this.vertex1.x + ((y - vertex1Y) * (this.vertex2.x - this.vertex1.x) / (vertex2Y - vertex1Y));
-}
+};
 
 /* Clip the edge line segment to the vertical range y1,y2 and then return 
  * the clipped line segment's horizontal range as {x1, x2}, where x2 >= x1;
@@ -219,7 +219,7 @@ PolygonEdge.prototype.clippedEdgeXRange = function(y1, y2) {
     var xForY1 = (minYVertex.y < y1) ? this.xIntercept(y1) : minYVertex.x;
     var xForY2 = (maxYVertex.y > y2) ? this.xIntercept(y2) : maxYVertex.x;
     return {x1: Math.min(xForY1, xForY2), x2: Math.max(xForY1, xForY2)};
-}
+};
 
 /* Clip the circle to the vertical range y1,y2 and return the extent of the clipped circle's 
  * projection on the X axis as {x1, x2}, where x2 >= x1. This method assumes that the circle
@@ -229,14 +229,15 @@ function clippedCircleXRange(center, radius, y1, y2) {
     if (center.y >= y1 && center.y <= y2)
         return {x1: center.x - radius, x2: center.x + radius};
 
+    var yi, xi;
     if (y2 < center.y) {
-        var yi = y2 - center.y;
-        var xi = ellipseXIntercept(yi, radius, radius);
+        yi = y2 - center.y;
+        xi = ellipseXIntercept(yi, radius, radius);
         return {x1: center.x - xi, x2: center.x + xi};
     }
 
-    var yi =  y1 - center.y;
-    var xi = ellipseXIntercept(yi, radius, radius);
+    yi =  y1 - center.y;
+    xi = ellipseXIntercept(yi, radius, radius);
     return {x1: center.x - xi, x2: center.x + xi};
 }
 
@@ -252,7 +253,7 @@ function OffsetEdge(edge, normalUnitVector) {
     this.m_vertex2 = {x: edge.vertex2.x + dx, y: edge.vertex2.y + dy};
 }
 
-OffsetEdge.prototype = new PolygonEdge;
+OffsetEdge.prototype = new PolygonEdge();
 
 Object.defineProperty(OffsetEdge.prototype, "vertex1", {
     get: function() { return this.m_vertex1; }
@@ -305,7 +306,7 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
         maxY = Math.max(y, maxY);
         vertex1Index = vertex2Index;
 
-    } while (vertex1Index != 0);
+    } while (vertex1Index !== 0);
 
     if (edgeIndex > 3) {
         var firstEdge = edges[0];
@@ -316,7 +317,7 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
         }
     }
 
-    if (shapeMargin == 0) {
+    if (shapeMargin === 0) {
         this.shapeMarginEdges = edges;
     } else {
         var shapeMarginEdges = [];
@@ -331,13 +332,13 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
     this.bounds = new Rect(minX - shapeMargin, minY - shapeMargin, shapeMargin*2 + (maxX - minX), shapeMargin*2 + (maxY - minY));
 }
 
-Polygon.prototype.vertexAt = function(index) { return this.m_vertices[index]; }
+Polygon.prototype.vertexAt = function(index) { return this.m_vertices[index]; };
 
 Object.defineProperty(Polygon.prototype, "numberOfVertices", {
     get: function() { return this.m_vertices.length; }
 });
 
-Polygon.prototype.edgeAt = function(index) { return this.m_edges[index]; }
+Polygon.prototype.edgeAt = function(index) { return this.m_edges[index]; };
 
 Object.defineProperty(Polygon.prototype, "numberOfEdges", {
     get: function() { return this.m_edges.length; }
@@ -347,17 +348,17 @@ Object.defineProperty(Polygon.prototype, "isEmpty", {
     get: function() { return this.numberOfEdges < 3 || this.bounds.isEmpty; }
 });
 
-Polygon.prototype.vertices = function() { return this.m_vertices.slice(0); }
-Polygon.prototype.edges = function() { return this.m_edges.slice(0); }
+Polygon.prototype.vertices = function() { return this.m_vertices.slice(0); };
+Polygon.prototype.edges = function() { return this.m_edges.slice(0); };
 
 Polygon.prototype.overlapsYRange = function(y1, y2) { // y range: y1 <= y < y2
     return y1 < this.bounds.maxY && y2 >= this.bounds.y;
-}
+};
 
 Polygon.prototype.nextVertexIndex = function(vertexIndex, clockwise) {
     var nVertices = this.numberOfVertices;
     return ((clockwise) ? vertexIndex + 1 : vertexIndex - 1 + nVertices) % nVertices;
-}
+};
 
 Polygon.prototype.nextEdgeVertexIndex = function(vertex1Index, clockwise) {
     var nVertices = this.numberOfVertices;
@@ -374,7 +375,7 @@ Polygon.prototype.nextEdgeVertexIndex = function(vertex1Index, clockwise) {
     }
 
     return vertex2Index;
-}
+};
 
 Polygon.prototype.containsPointEvenOdd = function(point) {
     var crossingCount = 0;
@@ -390,8 +391,8 @@ Polygon.prototype.containsPointEvenOdd = function(point) {
                 ++crossingCount;
         }
     }
-    return (crossingCount & 1) != 0
-}
+    return (crossingCount & 1) !== 0;
+};
 
 Polygon.prototype.containsPointNonZero = function(point) {
     var windingNumber = 0;
@@ -409,8 +410,8 @@ Polygon.prototype.containsPointNonZero = function(point) {
                 --windingNumber;
         }
     }
-    return windingNumber != 0;
-}
+    return windingNumber !== 0;
+};
 
 Polygon.prototype.containsPoint = function(point) {
     if (!this.bounds.containsPoint(point))
@@ -426,7 +427,7 @@ Polygon.prototype.edgeVerticesThatOverlapYRange = function(y1, y2) {
             result.push(vertex);
     }
     return result;
-}
+};
 
 Polygon.prototype.edgesThatOverlapYRange = function(y1, y2) {
     var result = [];
@@ -436,7 +437,7 @@ Polygon.prototype.edgesThatOverlapYRange = function(y1, y2) {
             result.push(edge);
     }
     return result;
-}
+};
 
 Polygon.prototype.shapeMarginEdgesThatOverlapYRange = function(y1, y2) {
     var result = [];
@@ -446,7 +447,7 @@ Polygon.prototype.shapeMarginEdgesThatOverlapYRange = function(y1, y2) {
             result.push(edge);
     }
     return result;
-}
+};
 
 function compareEdgeMinX(edge1, edge2) { return edge1.minX - edge2.minX; }
 
@@ -456,18 +457,18 @@ Polygon.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     if (this.isEmpty || !this.bounds.overlapsYRange(y1, y2))
         return undefined;
 
-    var result;
+    var result, i, xRange;
 
     var overlappingEdges = this.shapeMarginEdgesThatOverlapYRange(y1, y2);
-    if (overlappingEdges.length != 0) {
+    if (overlappingEdges.length !== 0) {
         overlappingEdges.sort(compareEdgeMinX);
 
         result = overlappingEdges[0].clippedEdgeXRange(y1, y2).x1;
-        for (var i = 1; i < overlappingEdges.length; i++) {
+        for (i = 1; i < overlappingEdges.length; i++) {
             if (overlappingEdges[i].minX > result)
                 break;
-            var xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
-            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1)
+            xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
+            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1);
         }
     }
 
@@ -476,17 +477,17 @@ Polygon.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
         var overlappingVertices = this.edgeVerticesThatOverlapYRange(y1 - shapeMargin, y2 + shapeMargin);
         overlappingVertices.sort(compareVertexXIncreasing); 
 
-        for (var i = 0; i < overlappingVertices.length; i++) {
+        for (i = 0; i < overlappingVertices.length; i++) {
             // FIXME: short-circuit
-            var xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
-            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1)
+            xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
+            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1);
         }
     }
 
     if (result === undefined)
         console.error("Polygon leftExclusionEdge() failed");
     return result;
-}
+};
 
 function compareEdgeMaxX(edge1, edge2) { return edge2.maxX - edge1.maxX; }
 
@@ -496,18 +497,18 @@ Polygon.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     if (this.isEmpty || !this.bounds.overlapsYRange(y1, y2))
         return undefined;
 
-    var result;
+    var result, i, xRange;
 
     var overlappingEdges = this.shapeMarginEdgesThatOverlapYRange(y1, y2);
-    if (overlappingEdges.length != 0) {
+    if (overlappingEdges.length !== 0) {
         overlappingEdges.sort(compareEdgeMaxX);
 
-        var result = overlappingEdges[0].clippedEdgeXRange(y1, y2).x2;
-        for (var i = 1; i < overlappingEdges.length; i++) {
+        result = overlappingEdges[0].clippedEdgeXRange(y1, y2).x2;
+        for (i = 1; i < overlappingEdges.length; i++) {
             if (overlappingEdges[i].maxX < result)
                 break;
-            var xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
-            result = Math.max(result, xRange.x2)
+            xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
+            result = Math.max(result, xRange.x2);
         }
     }
 
@@ -516,17 +517,17 @@ Polygon.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
         var overlappingVertices = this.edgeVerticesThatOverlapYRange(y1 - shapeMargin, y2 + shapeMargin);
         overlappingVertices.sort(compareVertexXDecreasing); 
 
-        for (var i = 0; i < overlappingVertices.length; i++) {
+        for (i = 0; i < overlappingVertices.length; i++) {
             // FIXME: short-circuit
-            var xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
-            result = (result === undefined) ? xRange.x2 : Math.max(result, xRange.x2)
+            xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
+            result = (result === undefined) ? xRange.x2 : Math.max(result, xRange.x2);
         }
     }
 
     if (result === undefined)
         console.error("Polygon rightExclusionEdge() failed");
     return result;
-}
+};
 
 function RasterInterval(y, startX, endX) {
     this.y = y;
@@ -547,8 +548,8 @@ Object.defineProperty(RasterIntervals, "none", {value:{}, writeable:false});
 Object.defineProperty(RasterIntervals.prototype, "minY", { get: function() { return -this.yOffset; } });
 Object.defineProperty(RasterIntervals.prototype, "maxY", { get: function() { return this.size - this.yOffset; } });
 
-RasterIntervals.prototype.intervalAt = function(y) { return this.intervals[y + this.yOffset]; }
-RasterIntervals.prototype.setIntervalAt = function(y, value) { this.intervals[y + this.yOffset] = value; }
+RasterIntervals.prototype.intervalAt = function(y) { return this.intervals[y + this.yOffset]; };
+RasterIntervals.prototype.setIntervalAt = function(y, value) { this.intervals[y + this.yOffset] = value; };
 
 RasterIntervals.prototype.uniteIntervalAt = function(y, interval) {
     var intervalAtY = this.intervalAt(y);
@@ -558,14 +559,14 @@ RasterIntervals.prototype.uniteIntervalAt = function(y, interval) {
         intervalAtY.startX = Math.min(intervalAtY.startX, interval.startX);
         intervalAtY.endX = Math.max(intervalAtY.endX, interval.endX);
     }
-}
+};
 
 RasterIntervals.prototype.intervalAtContains = function(y, interval) {
     var intervalAtY = this.intervalAt(y);
     if (intervalAtY == RasterIntervals.none)
         return false;
     return intervalAtY.startX <= interval.startX && intervalAtY.endX >= interval.endX;
-}
+};
 
 RasterIntervals.prototype.computeBounds = function() {
     var minX, maxX, minY, maxY;
@@ -581,7 +582,7 @@ RasterIntervals.prototype.computeBounds = function() {
         maxX = (maxX === undefined) ? intervalAtY.endX : Math.max(maxX, intervalAtY.endX);
     }
     return new Rect(minX, minY, maxX - minX + 1, maxY - minY + 1);
-}
+};
 
 function ShapeMarginIntervalGenerator(shapeMargin) {
     this.shapeMargin = shapeMargin;
@@ -594,7 +595,7 @@ ShapeMarginIntervalGenerator.prototype.generateIntervalAt = function(atY, forInt
     var xInterceptsIndex = Math.abs(atY - forInterval.y);
     var dx = (xInterceptsIndex > this.shapeMargin) ? 0 : this.xIntercepts[xInterceptsIndex];
     return new RasterInterval(atY, forInterval.startX - dx, forInterval.endX + dx);
-}
+};
 
 RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
     var mig = new ShapeMarginIntervalGenerator(shapeMargin);
@@ -607,8 +608,9 @@ RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
 
         var marginY0 = Math.max(this.minY, y - shapeMargin);
         var marginY1 = Math.min(this.maxY - 1, y + shapeMargin);
+        var marginY;
 
-        for (var marginY = y - 1; marginY >= marginY0; --marginY) {
+        for (marginY = y - 1; marginY >= marginY0; --marginY) {
             if (marginY > 0 && this.intervalAtContains(marginY, intervalAtY))
                 break;
             result.uniteIntervalAt(marginY, mig.generateIntervalAt(marginY, intervalAtY));
@@ -616,14 +618,14 @@ RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
 
         result.uniteIntervalAt(y, mig.generateIntervalAt(y, intervalAtY));
 
-        for (var marginY = y + 1; marginY <= marginY1; ++marginY) {
+        for (marginY = y + 1; marginY <= marginY1; ++marginY) {
             if (marginY < this.maxY && this.intervalAtContains(marginY, intervalAtY))
                 break;
             result.uniteIntervalAt(marginY, mig.generateIntervalAt(marginY, intervalAtY));
         }
     }
     return result;
-}
+};
 
 function RasterImage(image) {
     this.width = image.width;
@@ -641,7 +643,7 @@ function RasterImage(image) {
     }
 }
 
-RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; }
+RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; };
 
 RasterImage.prototype.computeIntervals = function(threshold, clip) {
     var intervals = new RasterIntervals(-clip.y, clip.height);
@@ -660,7 +662,7 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
         }
     }
     return intervals;
-}
+};
 
 function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.url = url;
@@ -682,7 +684,7 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.image.onerror = function() {
         // FIXME: We need more graceful error handling, but this will do for now
         console.error("Unable to load the image ", url);
-    }
+    };
 
     this.image.src = url;
 }
@@ -691,32 +693,32 @@ function initRaster(raster, clip) {
     var image = new RasterImage(raster.image);
     raster.intervals = image.computeIntervals(raster.shapeImageThreshold, clip);
     if (raster.shapeMargin > 0)
-        raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, clip)
+        raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, clip);
     raster.bounds = raster.intervals.computeBounds();
     raster.image = undefined;
 }
 
 Raster.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     var intervals = this.intervals;
-    var x = undefined;
+    var x; // = undefined;
     for (var y = Math.max(y1, this.clip.y); y <= y2 && y < this.clip.maxY; y++) {
         var endX = intervals.intervalAt(y).endX;
-        if (x == undefined || (endX !== undefined && endX > x))
+        if (x === undefined || (endX !== undefined && endX > x))
             x = endX;
     }
     return x;
-}
+};
 
 Raster.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     var intervals = this.intervals;
-    var x = undefined;
+    var x; // = undefined;
     for (var y = Math.max(y1, this.clip.y); y <= y2 && y < this.clip.maxY; y++) {
         var startX = intervals.intervalAt(y).startX;
-        if (x == undefined || (startX !== undefined && startX < x))
+        if (x === undefined || (startX !== undefined && startX < x))
             x = startX;
     }
     return x;
-}
+};
 
 // FIXME: replace the zeroRadii mess
 
@@ -734,7 +736,7 @@ Object.defineProperty(Size.prototype, "isEmpty", {
 Size.prototype.scale = function(factor) {
     this.width *= factor;
     this.height *= factor;
-}
+};
 
 function Rect(x, y, width, height) { 
     this.x = x;
@@ -757,30 +759,30 @@ Object.defineProperty(Rect.prototype, "maxY", {
     set: function (value) { this.height = value - this.y; }
 });
 
-Rect.prototype.containsX = function(x) { return x >= this.x && x < this.maxX; }
-Rect.prototype.containsY = function(y) { return y >= this.y && y < this.maxY; }
-Rect.prototype.containsPoint = function(p) { return this.containsX(p.x) && this.containsY(p.y); }
+Rect.prototype.containsX = function(x) { return x >= this.x && x < this.maxX; };
+Rect.prototype.containsY = function(y) { return y >= this.y && y < this.maxY; };
+Rect.prototype.containsPoint = function(p) { return this.containsX(p.x) && this.containsY(p.y); };
 
 Rect.prototype.shiftLeftEdgeTo = function(newX) { 
     this.width -= newX - this.x;
     this.x = newX;
-}
+};
 
 Rect.prototype.shiftTopEdgeTo = function(newY) { 
     this.height -= newY - this.y;
     this.y = newY;
-}
+};
 
-Rect.prototype.shiftRightEdgeTo = function(newX) {  this.width = newX - this.x; }
-Rect.prototype.shiftBottomEdgeTo = function(newY) { this.height = newY - this.y; }
+Rect.prototype.shiftRightEdgeTo = function(newX) {  this.width = newX - this.x; };
+Rect.prototype.shiftBottomEdgeTo = function(newY) { this.height = newY - this.y; };
 
 Rect.prototype.overlapsYRange = function(minY, maxY) {
     return !this.isEmpty && maxY >= this.y && minY < this.maxY;
-}
+};
 
 Rect.prototype.overlapsXRange = function(minX, maxX) {
     return !this.isEmpty && maxX >= this.x && minX < this.maxX;
-}
+};
 
 function RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight) { // corner radii parameters are {width, height}
     this.rect = rect;
@@ -797,7 +799,7 @@ RoundedRect.prototype.topLeftCorner = function() {
         this.rect.y, 
         this.radii.topLeft.width, 
         this.radii.topLeft.height); 
-}
+};
 
 RoundedRect.prototype.topRightCorner = function() {
     return new Rect(
@@ -805,7 +807,7 @@ RoundedRect.prototype.topRightCorner = function() {
         this.rect.y, 
         this.radii.topRight.width, 
         this.radii.topRight.height);
-}
+};
 
 RoundedRect.prototype.bottomLeftCorner = function() {
     return new Rect(
@@ -813,7 +815,7 @@ RoundedRect.prototype.bottomLeftCorner = function() {
         this.rect.maxY - this.radii.bottomLeft.height, 
         this.radii.bottomLeft.width, 
         this.radii.bottomLeft.height);
-}
+};
 
 RoundedRect.prototype.bottomRightCorner = function() {
     return new Rect(
@@ -821,15 +823,15 @@ RoundedRect.prototype.bottomRightCorner = function() {
         this.rect.maxY - this.radii.bottomRight.height, 
         this.radii.bottomRight.width, 
         this.radii.bottomRight.height);
-}
+};
 
 RoundedRect.prototype.isRounded = function() {
     function isCornerRadiusNonZero(radius) { return radius.width > 0 && radius.height > 0; }
-    return isCornerRadiusNonZero(this.radii.topLeft)
-       || isCornerRadiusNonZero(this.radii.topRight)
-       || isCornerRadiusNonZero(this.radii.bottomLeft)
-       || isCornerRadiusNonZero(this.radii.bottomRight);
-}
+    return isCornerRadiusNonZero(this.radii.topLeft) ||
+       isCornerRadiusNonZero(this.radii.topRight) ||
+       isCornerRadiusNonZero(this.radii.bottomLeft) ||
+       isCornerRadiusNonZero(this.radii.bottomRight);
+};
 
 RoundedRect.prototype.cornersInsetRect = function() {
     var topLeftCorner = this.topLeftCorner();
@@ -871,11 +873,11 @@ RoundedRect.prototype.isRenderable = function()
 {
     var radii = this.radii;
     var rect = this.rect;
-    return radii.topLeft.width + radii.topRight.width <= rect.width
-        && radii.bottomLeft.width + radii.bottomRight.width <= rect.width
-        && radii.topLeft.height + radii.bottomLeft.height <= rect.height
-        && radii.topRight.height + radii.bottomRight.height <= rect.height;
-}
+    return radii.topLeft.width + radii.topRight.width <= rect.width &&
+        radii.bottomLeft.width + radii.bottomRight.width <= rect.width &&
+        radii.topLeft.height + radii.bottomLeft.height <= rect.height &&
+        radii.topRight.height + radii.bottomRight.height <= rect.height;
+};
 
 // See RoundedRect::adjustRadii() in https://trac.webkit.org/browser/trunk/Source/WebCore/platform/graphics/RoundedRect.cpp
 // and http://www.w3.org/TR/css3-background/#corner-overlap
@@ -908,39 +910,39 @@ RoundedRect.prototype.minXInterceptAt = function(y, noInterceptReturnValue) {
     if (!this.rect.containsY(y))
         return noInterceptReturnValue;
 
-    var topLeftCorner = this.topLeftCorner();
+    var topLeftCorner = this.topLeftCorner(), yi;
     if (topLeftCorner.containsY(y)) {
-        var yi = topLeftCorner.maxY - y;
+        yi = topLeftCorner.maxY - y;
         return topLeftCorner.maxX  - ellipseXIntercept(yi, topLeftCorner.width, topLeftCorner.height);
     } 
 
     var bottomLeftCorner = this.bottomLeftCorner();
     if (bottomLeftCorner.containsY(y)) {
-        var yi = y - bottomLeftCorner.y;
+        yi = y - bottomLeftCorner.y;
         return bottomLeftCorner.maxX - ellipseXIntercept(yi, bottomLeftCorner.width, bottomLeftCorner.height);
     } 
 
     return this.rect.x;
-}
+};
 
 RoundedRect.prototype.maxXInterceptAt = function(y, noInterceptReturnValue) {
     if (!this.rect.containsY(y))
         return noInterceptReturnValue;
 
-    var topRightCorner = this.topRightCorner();
+    var topRightCorner = this.topRightCorner(), yi;
     if (topRightCorner.containsY(y)) {
-        var yi = topRightCorner.maxY - y;
+        yi = topRightCorner.maxY - y;
         return topRightCorner.x + ellipseXIntercept(yi, topRightCorner.width, topRightCorner.height);
     } 
 
     var bottomRightCorner = this.bottomRightCorner();
     if (bottomRightCorner.containsY(y)) {
-        var yi = y - bottomRightCorner.y;
+        yi = y - bottomRightCorner.y;
         return bottomRightCorner.x + ellipseXIntercept(yi, bottomRightCorner.width, bottomRightCorner.height);
     } 
 
     return this.rect.maxX;
-}
+};
 
 RoundedRect.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     if (this.rect.isEmpty || !this.rect.overlapsYRange(y1, y2))
@@ -950,7 +952,7 @@ RoundedRect.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
         return this.rect.maxX;
 
     return Math.max(this.maxXInterceptAt(y1, this.rect.x), this.maxXInterceptAt(y2, this.rect.x));
-}
+};
 
 RoundedRect.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     if (this.rect.isEmpty || !this.rect.overlapsYRange(y1, y2))
@@ -960,12 +962,12 @@ RoundedRect.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
         return this.rect.x;
 
     return Math.min(this.minXInterceptAt(y1, this.rect.maxX), this.minXInterceptAt(y2, this.rect.maxX));
-}
+};
 
 function computeOffsetHeight(dx, dy, areaLimit) {
-    if (dy == 0)
+    if (dy === 0)
         return 1;
-    if (dx == 0 || (dx * dy) / 2 < areaLimit)
+    if (dx === 0 || (dx * dy) / 2 < areaLimit)
         return Math.round(dy);
     return Math.round(Math.sqrt(2 * areaLimit * (dy / dx)));
 }
@@ -979,13 +981,13 @@ RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2
     if (y1 < this.rect.y)
         offsets.push({x: undefined, height: this.rect.y - y1});
 
-    var topLeftCorner = this.topLeftCorner();
+    var topLeftCorner = this.topLeftCorner(), offsetHeight, maxY, xi, yi, y;
     if (topLeftCorner.overlapsYRange(y1, y2)) {
-        var offsetHeight = computeOffsetHeight(topLeftCorner.width, topLeftCorner.height, areaLimit);
-        var maxY = Math.min(topLeftCorner.maxY, y2);
-        for (var y = topLeftCorner.y; y < maxY; y += offsetHeight) {
-            var yi = topLeftCorner.maxY - Math.min(y + offsetHeight, maxY);
-            var xi = ellipseXIntercept(yi, topLeftCorner.width, topLeftCorner.height);
+        offsetHeight = computeOffsetHeight(topLeftCorner.width, topLeftCorner.height, areaLimit);
+        maxY = Math.min(topLeftCorner.maxY, y2);
+        for (y = topLeftCorner.y; y < maxY; y += offsetHeight) {
+            yi = topLeftCorner.maxY - Math.min(y + offsetHeight, maxY);
+            xi = ellipseXIntercept(yi, topLeftCorner.width, topLeftCorner.height);
             offsets.push({height: Math.min(offsetHeight, maxY - y), x: topLeftCorner.maxX - xi});
         }
     }
@@ -996,11 +998,11 @@ RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2
 
     var bottomLeftCorner = this.bottomLeftCorner();
     if (bottomLeftCorner.overlapsYRange(y1, y2)) {
-        var offsetHeight = computeOffsetHeight(bottomLeftCorner.width, bottomLeftCorner.height, areaLimit);
-        var maxY = Math.min(bottomLeftCorner.maxY, y2);
-        for (var y = bottomLeftCorner.y; y < maxY; y += offsetHeight) {
-            var yi = y - bottomLeftCorner.y;
-            var xi = ellipseXIntercept(yi, bottomLeftCorner.width, bottomLeftCorner.height);
+        offsetHeight = computeOffsetHeight(bottomLeftCorner.width, bottomLeftCorner.height, areaLimit);
+        maxY = Math.min(bottomLeftCorner.maxY, y2);
+        for (y = bottomLeftCorner.y; y < maxY; y += offsetHeight) {
+            yi = y - bottomLeftCorner.y;
+            xi = ellipseXIntercept(yi, bottomLeftCorner.width, bottomLeftCorner.height);
             offsets.push({height: Math.min(offsetHeight, maxY - y), x: bottomLeftCorner.maxX - xi});
         }
     }
@@ -1009,7 +1011,7 @@ RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2
         offsets.push({x: undefined, height: y2 - this.rect.maxY});
 
     return offsets;
-}
+};
 
 RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
     if (!this.rect.overlapsYRange(y1, y2))
@@ -1020,13 +1022,13 @@ RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y
     if (y1 < this.rect.y)
         offsets.push({x: undefined, height: this.rect.y - y1});
 
-    var topRightCorner = this.topRightCorner();
+    var topRightCorner = this.topRightCorner(), offsetHeight, maxY, y, yi, xi;
     if (topRightCorner.overlapsYRange(y1, y2)) {
-        var offsetHeight = computeOffsetHeight(topRightCorner.width, topRightCorner.height, areaLimit);
-        var maxY = Math.min(topRightCorner.maxY, y2);
-        for (var y = topRightCorner.y; y < maxY; y += offsetHeight) {
-            var yi = topRightCorner.maxY - Math.min(y + offsetHeight, maxY);
-            var xi = ellipseXIntercept(yi, topRightCorner.width, topRightCorner.height);
+        offsetHeight = computeOffsetHeight(topRightCorner.width, topRightCorner.height, areaLimit);
+        maxY = Math.min(topRightCorner.maxY, y2);
+        for (y = topRightCorner.y; y < maxY; y += offsetHeight) {
+            yi = topRightCorner.maxY - Math.min(y + offsetHeight, maxY);
+            xi = ellipseXIntercept(yi, topRightCorner.width, topRightCorner.height);
             offsets.push({height: Math.min(offsetHeight, maxY - y), x: topRightCorner.x + xi});
         }
     }
@@ -1037,11 +1039,11 @@ RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y
 
     var bottomRightCorner = this.bottomRightCorner();
     if (bottomRightCorner.overlapsYRange(y1, y2)) {
-        var offsetHeight = computeOffsetHeight(bottomRightCorner.width, bottomRightCorner.height, areaLimit);
-        var maxY = Math.min(bottomRightCorner.maxY, y2);
-        for (var y = bottomRightCorner.y; y < maxY; y += offsetHeight) {
-            var yi = y - bottomRightCorner.y;
-            var xi = ellipseXIntercept(yi, bottomRightCorner.width, bottomRightCorner.height);
+        offsetHeight = computeOffsetHeight(bottomRightCorner.width, bottomRightCorner.height, areaLimit);
+        maxY = Math.min(bottomRightCorner.maxY, y2);
+        for (y = bottomRightCorner.y; y < maxY; y += offsetHeight) {
+            yi = y - bottomRightCorner.y;
+            xi = ellipseXIntercept(yi, bottomRightCorner.width, bottomRightCorner.height);
             offsets.push({height: Math.min(offsetHeight, maxY - y), x: bottomRightCorner.x + xi});
         }
     }
@@ -1050,7 +1052,7 @@ RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y
         offsets.push({x: undefined, height: y2 - this.rect.maxY});
 
     return offsets;
-}
+};
 
 function createRoundedRectForCircle(circle, margin) {
     var r = circle.r + margin;
@@ -1069,7 +1071,7 @@ function createRoundedRectForInset(inset, margin) {
     var topRight = toSize(inset.radii[1]);
     var bottomRight = toSize(inset.radii[2]);
     var bottomLeft = toSize(inset.radii[3]);
-    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + 2 * margin, inset.height + 2 * margin)
+    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + 2 * margin, inset.height + 2 * margin);
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
@@ -1153,15 +1155,15 @@ ShapeInfo.prototype.onReady = function(callback) {
         callback();
     else
         this.callback = callback;
-}
+};
 
 ShapeInfo.prototype.leftExclusionEdge = function(line) { // { top, bottom, left, right }
     return this.geometry ? this.geometry.leftExclusionEdge(line.top, line.bottom) : line.left;
-}
+};
 
 ShapeInfo.prototype.rightExclusionEdge = function(line) { // { top, bottom, left, right }
     return this.geometry ? this.geometry.rightExclusionEdge(line.top, line.bottom) : line.right;
-}
+};
 
 function exclusionEdgeValue(x) { return x === undefined ? 0 : x; }
 
@@ -1198,35 +1200,33 @@ ShapeInfo.prototype.computeStepOffsets = function(step) {
     }
 
     return offsets;
-}
+};
 
 ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
     var dx = this.shapeValue.box.x + this.metrics.margins[3];
     var dy = this.metrics.margins[0] + this.shapeValue.box.y;
-    var offsets = (this.metrics.cssFloat === 'left')
-        ? this.geometry.rightExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit)
-        : this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
+    var offsets = (this.metrics.cssFloat === 'left') ?
+        this.geometry.rightExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit) :
+        this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
 
     var result = [];
     var y = dy;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset = offsets[i].x === undefined
-            ? 0
-            : Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
-            ? offsets[i].x + dx
-            : this.metrics.marginBox.width - (offsets[i].x + dx));
+        var layoutOffset = 
+            offsets[i].x === undefined ? 0 : Math.min(this.metrics.marginBox.width,
+            (this.metrics.cssFloat === 'left') ? offsets[i].x + dx : this.metrics.marginBox.width - (offsets[i].x + dx));
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
         y += offsets[i].height;
     }
     
     return result;
-}
+};
 
 ShapeInfo.prototype.offsets = function(parameters) {
     if (this.geometry instanceof RoundedRect)
         return (parameters && parameters.mode) == "step" ? this.computeStepOffsets(parameters.step) : this.computeAdaptiveOffsets(parameters.limit);
     return  this.computeStepOffsets(parameters.step);
-}
+};
 
 function Polyfill(scope) {
     this.scope = scope;
@@ -1247,7 +1247,7 @@ function Polyfill(scope) {
 
 function fakeIt(element, offsets) {
     var wrapper = document.createElement('div'),
-        styles, prop;
+        styles;
 
     offsets.forEach(function(offset, i) {
         var height = offset.bottom - offset.top;
@@ -1258,8 +1258,8 @@ function fakeIt(element, offsets) {
             width: offset.offset + 'px',
             height: height + 'px',
             clear: offset.cssFloat
-        }
-        for (prop in styles)
+        };
+        for (var prop in styles)
             sandbag.style[prop] = styles[prop];
         wrapper.appendChild(sandbag);
     });
@@ -1272,7 +1272,7 @@ function fakeIt(element, offsets) {
         'z-index': '-1' // Absolutely positioning the child normally forces it to the top
     };
 
-    for (prop in styles)
+    for (var prop in styles)
         wrapper.style[prop] = styles[prop];
 
     var parent = element.parentNode, subwrapper,
@@ -1285,7 +1285,7 @@ function fakeIt(element, offsets) {
         width: '100%', // will fill the whole width, FF does 'auto' differently
         height: parent.clientHeight - borderHeight,
         left: '0'
-    }
+    };
 
     subwrapper = document.createElement('div');
     for (prop in styles)
@@ -1319,20 +1319,20 @@ Polyfill.prototype.polyfill = function(element, settings) {
         if (settings && settings.callback && typeof settings.callback === 'function')
             settings.callback.call(self.scope);
     });
-}
+};
 
 Polyfill.prototype.removePolyfill = function(element) {
     var oldParent = element.parentNode;
-    for (oldParent = element.parentNode
-        ; !oldParent || !oldParent.hasAttribute('data-shape-outside-container')
-        ; oldParent = oldParent.parentNode);
+    for (oldParent = element.parentNode;
+        !oldParent || !oldParent.hasAttribute('data-shape-outside-container');
+        oldParent = oldParent.parentNode);
 
     if (!oldParent)
         return;
 
     oldParent.parentNode.insertBefore(element, oldParent);
     oldParent.parentNode.removeChild(oldParent);
-}
+};
 
 function debounce(func, wait) {
     var timeout;
@@ -1343,7 +1343,7 @@ function debounce(func, wait) {
             timeout = null;
             func.apply(context, args);
         }, wait);
-    }
+    };
 }
 
 Polyfill.prototype.run = function(settings) {
@@ -1389,13 +1389,13 @@ Polyfill.prototype.run = function(settings) {
     var els = document.querySelectorAll('[data-shape-outside]');
     for (var i = 0; i < els.length; i++)
         this.polyfill(els[i], settings);
-}
+};
 
 Polyfill.prototype.teardown = function() {
     var els = document.querySelectorAll('[data-shape-outside]');
     for (var i = 0; i < els.length; i++)
         this.removePolyfill(els[i]);
-}
+};
 
 /**
  * ShapeValue may contain { shape, box, url, shapeMargin, shapeImageThreshold }
@@ -1420,7 +1420,7 @@ Polyfill.prototype.teardown = function() {
  */
 function ShapeValue(params) {
     if (!(params && params.metrics && params.shapeOutside)) {
-        console.error('ShapeValue requires at least a metrics object and shape-outside string')
+        console.error('ShapeValue requires at least a metrics object and shape-outside string');
         return;
     }
     this.url = this.parseUrl(params.shapeOutside);
@@ -1439,7 +1439,7 @@ ShapeValue.prototype.parseUrl = function(text) {
     url = url.replace(/^['"]/, '');
     url = url.replace(/['"]$/, '');
     return url;
-}
+};
 
 function adjustBounds(bounds, sign, offsets) {
     var top = offsets.reduce(function(prev, curr) { return prev + curr[0]; }, 0);
@@ -1490,7 +1490,7 @@ ShapeValue.prototype.parseBox = function(text, metrics) {
     else
         box = box[0];
     var radii = JSON.parse(JSON.stringify(metrics.borderBox.radii));
-    var result = { text: box, x: metrics.borderBox.x, y: metrics.borderBox.y, width: metrics.borderBox.width, height: metrics.borderBox.height, 'radii': radii }
+    var result = { text: box, x: metrics.borderBox.x, y: metrics.borderBox.y, width: metrics.borderBox.width, height: metrics.borderBox.height, 'radii': radii };
     switch (box) {
         case 'content-box':
             adjustBounds(result, -1, [metrics.paddings, metrics.borders]);
@@ -1508,7 +1508,7 @@ ShapeValue.prototype.parseBox = function(text, metrics) {
             break;
     }
     return result;
-}
+};
 
 function pluck(arr, index) {
     return arr.map(function(item) {
@@ -1520,32 +1520,32 @@ ShapeValue.prototype.printShape = function() {
     if (this.shape) {
         switch(this.shape.type) {
             case 'inset':
-                return 'inset(' + this.shape.insets.join(' ')
-                    + ' round ' + pluck(this.shape.radii, 0).join(' ')
-                    + ' / ' + pluck(this.shape.radii, 1).join(' ') + ')';
+                return 'inset(' + this.shape.insets.join(' ') +
+                    ' round ' + pluck(this.shape.radii, 0).join(' ') +
+                    ' / ' + pluck(this.shape.radii, 1).join(' ') + ')';
             case 'circle':
                 return 'circle(' + this.shape.r + ' at ' + this.shape.cx + ' ' + this.shape.cy + ')';
             case 'ellipse':
-                return 'ellipse(' + this.shape.rx + ' ' + this.shape.ry
-                    + ' at ' + this.shape.cx + ' ' + this.shape.cy + ')';
+                return 'ellipse(' + this.shape.rx + ' ' + this.shape.ry +
+                    ' at ' + this.shape.cx + ' ' + this.shape.cy + ')';
             case 'polygon':
-                return 'polygon(' + this.shape.fillRule + ', '
-                    + this.shape.points.map(function(point) { return point.x + ' ' + point.y }).join(', ')
-                    + ')';
+                return 'polygon(' + this.shape.fillRule + ', ' +
+                    this.shape.points.map(function(point) { return point.x + ' ' + point.y; }).join(', ') +
+                    ')';
             default: return 'not yet implemented for ' + this.shape.type;
         }
     }
     return 'no shape specified';
-}
+};
 
 ShapeValue.prototype.printBox = function() {
     if (this.box) {
-        return this.box.text + ' { x: ' + this.box.x + ', y: ' + this.box.y
-            + ', width: ' + this.box.width + ', height: ' + this.box.height
-            + ', radii: ' + pluck(this.box.radii, 0).join(' ') + ' / ' + pluck(this.box.radii, 1).join(' ') + ' }';
+        return this.box.text + ' { x: ' + this.box.x + ', y: ' + this.box.y +
+            ', width: ' + this.box.width + ', height: ' + this.box.height +
+            ', radii: ' + pluck(this.box.radii, 0).join(' ') + ' / ' + pluck(this.box.radii, 1).join(' ') + ' }';
     }
     return 'no box specified';
-}
+};
 
 ShapeValue.prototype.parseBasicShape = function(text, box, metrics) {
     var shape = /(inset|circle|ellipse|polygon)\((.*)\)/.exec(text);
@@ -1566,7 +1566,7 @@ ShapeValue.prototype.parseBasicShape = function(text, box, metrics) {
         return this.parsePolygon(args, box, metrics);
     default: return null;
     }
-}
+};
 
 ShapeValue.prototype.parseInset = function(args, box, metrics) {
     // use the 'ro' in round and '/' as delimiters
@@ -1576,7 +1576,7 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         type: 'inset',
         insets: [0, 0, 0, 0],
         radii: [[0, 0], [0, 0], [0, 0], [0, 0]]
-    }
+    };
     if (args && args[1]) {
         var insets = args[1].trim();
         insets = insets.split(/\s+/);
@@ -1590,8 +1590,9 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         result.insets[3] = metrics.toPixels(result.insets[3], box.width);
     }
 
+    var radii;
     if (args && args[2]) {
-        var radii = args[2].trim();
+        radii = args[2].trim();
         radii = radii.split(/\s+/);
         if (radii.length < 2) radii.push(radii[0]);
         if (radii.length < 3) radii.push(radii[0]);
@@ -1615,13 +1616,13 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         });
     }
 
-    result['x'] = result.insets[3];
-    result['y'] = result.insets[0];
+    result.x = result.insets[3];
+    result.y = result.insets[0];
     result.width = box.width - (result.insets[1] + result.insets[3]);
     result.height = box.height - (result.insets[0] + result.insets[2]);
 
     return result;
-}
+};
 
 function positionOffsetToPixels(offset, extent, metrics) {
     offset = offset.split(/\s+/);
@@ -1661,10 +1662,10 @@ ShapeValue.prototype.parseEllipsoid = function(args) {
     if (args && args[1]) {
         var radii = args[1].trim();
         radii = radii.split(/\s+/);
-        result['rx'] = radii[0];
-        result['ry'] = radii.length > 1 ? radii[1] : radii[0];
+        result.rx = radii[0];
+        result.ry = radii.length > 1 ? radii[1] : radii[0];
     } else {
-        result['rx'] = result['ry'] = 'closest-side';
+        result.rx = result.ry = 'closest-side';
     }
 
     var resolvedPositions = [];
@@ -1689,35 +1690,35 @@ ShapeValue.prototype.parseEllipsoid = function(args) {
         resolvedPositions[0] = resolvedPositions[1];
         resolvedPositions[1] = swap;
     }
-    result['cx'] = resolvedPositions[0];
-    result['cy'] = resolvedPositions[1];
+    result.cx = resolvedPositions[0];
+    result.cy = resolvedPositions[1];
 
     return result;
-}
+};
 
 ShapeValue.prototype.parseCircle = function(args, box, metrics) {
     var result = this.parseEllipsoid(args);
-    result['type'] = 'circle';
-    result['cx'] = positionOffsetToPixels(result['cx'], box.width, metrics);
-    result['cy'] = positionOffsetToPixels(result['cy'], box.height, metrics);
-    result['r'] = radiusToPixels(result['rx'], [
-        Math.abs(result['cx']), Math.abs(box.width - result['cx']),
-        Math.abs(result['cy']), Math.abs(box.height - result['cy'])
+    result.type = 'circle';
+    result.cx = positionOffsetToPixels(result.cx, box.width, metrics);
+    result.cy = positionOffsetToPixels(result.cy, box.height, metrics);
+    result.r = radiusToPixels(result.rx, [
+        Math.abs(result.cx), Math.abs(box.width - result.cx),
+        Math.abs(result.cy), Math.abs(box.height - result.cy)
     ], Math.sqrt((box.width * box.width + box.height * box.height) / 2), metrics);
-    delete result['rx'];
-    delete result['ry'];
+    delete result.rx;
+    delete result.ry;
     return result;
-}
+};
 
 ShapeValue.prototype.parseEllipse = function(args, box, metrics) {
     var result = this.parseEllipsoid(args);
-    result['type'] = 'ellipse';
-    result['cx'] = positionOffsetToPixels(result['cx'], box.width, metrics);
-    result['cy'] = positionOffsetToPixels(result['cy'], box.height, metrics);
-    result['rx'] = radiusToPixels(result['rx'], [Math.abs(result['cx']), Math.abs(box.width - result['cx'])], box.width, metrics);
-    result['ry'] = radiusToPixels(result['ry'], [Math.abs(result['cy']), Math.abs(box.height - result['cy'])], box.height, metrics);
+    result.type = 'ellipse';
+    result.cx = positionOffsetToPixels(result.cx, box.width, metrics);
+    result.cy = positionOffsetToPixels(result.cy, box.height, metrics);
+    result.rx = radiusToPixels(result.rx, [Math.abs(result.cx), Math.abs(box.width - result.cx)], box.width, metrics);
+    result.ry = radiusToPixels(result.ry, [Math.abs(result.cy), Math.abs(box.height - result.cy)], box.height, metrics);
     return result;
-}
+};
 
 ShapeValue.prototype.parsePolygon = function(args, box, metrics) {
     args = args.split(/\s*,\s*/);
@@ -1729,13 +1730,13 @@ ShapeValue.prototype.parsePolygon = function(args, box, metrics) {
     var points = args.map(function(point) {
         var coords = point.split(/\s+/);
         return { x: metrics.toPixels(coords[0], box.width), y: metrics.toPixels(coords[1], box.height) };
-    })
+    });
     return {
         type: 'polygon',
         'fillRule': rule,
         'points': points
-    }
-}
+    };
+};
 
 ShapeValue.prototype.computeClip = function(referenceBox, metrics)
 {
@@ -1745,20 +1746,21 @@ ShapeValue.prototype.computeClip = function(referenceBox, metrics)
     var marginWidth = metrics.margins[3] + metrics.margins[1];
     var marginHeight = metrics.margins[0] + metrics.margins[2];
     return {x: -referenceBox.x - marginLeft, y: -referenceBox.y - marginTop, width: metrics.borderBox.width + marginWidth, height: metrics.borderBox.height + marginHeight};
-}
+};
 
 ShapeValue.prototype.parseShapeMargin = function(margin, box, metrics) {
     return parseInt(margin) ? Math.max(0, metrics.toPixels(margin, box.width)) : 0;
-}
+};
 
 ShapeValue.prototype.parseShapeImageThreshold = function(threshold) {
     var value = parseFloat(threshold);  // FIXME: disallow non-numerical values
     return value ? Math.min(Math.max(0, value), 1.0) : 0;
-}
+};
 
 function getStyleSheetElements() {
     var doc = document,
-        stylesheets = [];
+        stylesheets = [],
+        i, len;
 
     if (typeof doc.querySelectorAll == 'function') {
         // shiny new browsers
@@ -1773,7 +1775,7 @@ function getStyleSheetElements() {
         var tags = doc.getElementsByTagName("link");
 
         if (tags.length) {
-            for (var i = 0, len = tags.length; i < len; i++) {
+            for (i = 0, len = tags.length; i < len; i++) {
                 if (tags[i].getAttribute('rel') === "stylesheet") {
                     stylesheets.push(tags[i]);
                 }
@@ -1782,7 +1784,7 @@ function getStyleSheetElements() {
 
         // <style>
         tags = doc.getElementsByTagName("style");
-        for (var i=0, len = tags.length; i < len; i++) {
+        for (i=0, len = tags.length; i < len; i++) {
             stylesheets.push(tags[i]);
         }
     }
@@ -1812,7 +1814,7 @@ StyleSheet.prototype.load = function(onSuccess, onError, scope) {
                     onError.call(scope, self);
                 }
             }
-        }
+        };
 
         xhr.open('GET', this.url);
         try {
@@ -1853,12 +1855,12 @@ StyleLoader.prototype.init = function() {
         this.stylesheets.push(stylesheet);
         stylesheet.load(this.onStyleSheetLoad, this.onStyleSheetError, this);
     }
-}
+};
 
 StyleLoader.prototype.onStyleSheetLoad = function(stylesheet) {
     this.queueCount--;
     this.onComplete.call(this);
-}
+};
 
 
 StyleLoader.prototype.onStyleSheetError = function(stylesheet) {
@@ -1875,14 +1877,14 @@ StyleLoader.prototype.onStyleSheetError = function(stylesheet) {
             return;
         }
     }
-}
+};
 
 StyleLoader.prototype.onComplete = function() {
     if (this.queueCount === 0) {
         // run the callback after all stylesheet contents have loaded
         this.callback.call(this, this.stylesheets);
     }
-}
+};
 
 function StylePolyfill(callback) {
     this.callback = callback || function() {};
@@ -1896,7 +1898,7 @@ StylePolyfill.prototype.onStylesLoaded = function(stylesheets) {
     // use : and ; as delimiters, except between ()
     // this will be sufficient for most, but not all cases, eg: rectangle(calc(100%))
     var selector = "\\s*([^{}]*[^\\s])\\s*{[^\\}]*";
-    var value = "\\s*:\\s*((?:[^;\\(]|\\([^\\)]*\\))*)\s*;";
+    var value = "\\s*:\\s*((?:[^;\\(]|\\([^\\)]*\\))*)\\s*;";
 
     var re, match;
 
@@ -1904,7 +1906,7 @@ StylePolyfill.prototype.onStylesLoaded = function(stylesheets) {
     properties.forEach(function(property) {
         re = new RegExp(selector + "(" + property + ")" + value, "ig");
         stylesheets.forEach(function(stylesheet) {
-            while (match = re.exec(stylesheet.cssText)) {
+            while ((match = re.exec(stylesheet.cssText)) !== null) {
                 rules.push({
                     selector: match[1],
                     property: match[2],
@@ -1915,7 +1917,7 @@ StylePolyfill.prototype.onStylesLoaded = function(stylesheets) {
     });
 
     this.callback(rules);
-}
+};
 
 scope.ShapesPolyfill = new Polyfill(scope);
-}(window);
+})(window);

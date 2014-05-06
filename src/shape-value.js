@@ -36,7 +36,7 @@ limitations under the License.
  */
 function ShapeValue(params) {
     if (!(params && params.metrics && params.shapeOutside)) {
-        console.error('ShapeValue requires at least a metrics object and shape-outside string')
+        console.error('ShapeValue requires at least a metrics object and shape-outside string');
         return;
     }
     this.url = this.parseUrl(params.shapeOutside);
@@ -55,7 +55,7 @@ ShapeValue.prototype.parseUrl = function(text) {
     url = url.replace(/^['"]/, '');
     url = url.replace(/['"]$/, '');
     return url;
-}
+};
 
 function adjustBounds(bounds, sign, offsets) {
     var top = offsets.reduce(function(prev, curr) { return prev + curr[0]; }, 0);
@@ -106,7 +106,7 @@ ShapeValue.prototype.parseBox = function(text, metrics) {
     else
         box = box[0];
     var radii = JSON.parse(JSON.stringify(metrics.borderBox.radii));
-    var result = { text: box, x: metrics.borderBox.x, y: metrics.borderBox.y, width: metrics.borderBox.width, height: metrics.borderBox.height, 'radii': radii }
+    var result = { text: box, x: metrics.borderBox.x, y: metrics.borderBox.y, width: metrics.borderBox.width, height: metrics.borderBox.height, 'radii': radii };
     switch (box) {
         case 'content-box':
             adjustBounds(result, -1, [metrics.paddings, metrics.borders]);
@@ -124,7 +124,7 @@ ShapeValue.prototype.parseBox = function(text, metrics) {
             break;
     }
     return result;
-}
+};
 
 function pluck(arr, index) {
     return arr.map(function(item) {
@@ -136,32 +136,32 @@ ShapeValue.prototype.printShape = function() {
     if (this.shape) {
         switch(this.shape.type) {
             case 'inset':
-                return 'inset(' + this.shape.insets.join(' ')
-                    + ' round ' + pluck(this.shape.radii, 0).join(' ')
-                    + ' / ' + pluck(this.shape.radii, 1).join(' ') + ')';
+                return 'inset(' + this.shape.insets.join(' ') +
+                    ' round ' + pluck(this.shape.radii, 0).join(' ') +
+                    ' / ' + pluck(this.shape.radii, 1).join(' ') + ')';
             case 'circle':
                 return 'circle(' + this.shape.r + ' at ' + this.shape.cx + ' ' + this.shape.cy + ')';
             case 'ellipse':
-                return 'ellipse(' + this.shape.rx + ' ' + this.shape.ry
-                    + ' at ' + this.shape.cx + ' ' + this.shape.cy + ')';
+                return 'ellipse(' + this.shape.rx + ' ' + this.shape.ry +
+                    ' at ' + this.shape.cx + ' ' + this.shape.cy + ')';
             case 'polygon':
-                return 'polygon(' + this.shape.fillRule + ', '
-                    + this.shape.points.map(function(point) { return point.x + ' ' + point.y }).join(', ')
-                    + ')';
+                return 'polygon(' + this.shape.fillRule + ', ' +
+                    this.shape.points.map(function(point) { return point.x + ' ' + point.y; }).join(', ') +
+                    ')';
             default: return 'not yet implemented for ' + this.shape.type;
         }
     }
     return 'no shape specified';
-}
+};
 
 ShapeValue.prototype.printBox = function() {
     if (this.box) {
-        return this.box.text + ' { x: ' + this.box.x + ', y: ' + this.box.y
-            + ', width: ' + this.box.width + ', height: ' + this.box.height
-            + ', radii: ' + pluck(this.box.radii, 0).join(' ') + ' / ' + pluck(this.box.radii, 1).join(' ') + ' }';
+        return this.box.text + ' { x: ' + this.box.x + ', y: ' + this.box.y +
+            ', width: ' + this.box.width + ', height: ' + this.box.height +
+            ', radii: ' + pluck(this.box.radii, 0).join(' ') + ' / ' + pluck(this.box.radii, 1).join(' ') + ' }';
     }
     return 'no box specified';
-}
+};
 
 ShapeValue.prototype.parseBasicShape = function(text, box, metrics) {
     var shape = /(inset|circle|ellipse|polygon)\((.*)\)/.exec(text);
@@ -182,7 +182,7 @@ ShapeValue.prototype.parseBasicShape = function(text, box, metrics) {
         return this.parsePolygon(args, box, metrics);
     default: return null;
     }
-}
+};
 
 ShapeValue.prototype.parseInset = function(args, box, metrics) {
     // use the 'ro' in round and '/' as delimiters
@@ -192,7 +192,7 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         type: 'inset',
         insets: [0, 0, 0, 0],
         radii: [[0, 0], [0, 0], [0, 0], [0, 0]]
-    }
+    };
     if (args && args[1]) {
         var insets = args[1].trim();
         insets = insets.split(/\s+/);
@@ -206,8 +206,9 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         result.insets[3] = metrics.toPixels(result.insets[3], box.width);
     }
 
+    var radii;
     if (args && args[2]) {
-        var radii = args[2].trim();
+        radii = args[2].trim();
         radii = radii.split(/\s+/);
         if (radii.length < 2) radii.push(radii[0]);
         if (radii.length < 3) radii.push(radii[0]);
@@ -231,13 +232,13 @@ ShapeValue.prototype.parseInset = function(args, box, metrics) {
         });
     }
 
-    result['x'] = result.insets[3];
-    result['y'] = result.insets[0];
+    result.x = result.insets[3];
+    result.y = result.insets[0];
     result.width = box.width - (result.insets[1] + result.insets[3]);
     result.height = box.height - (result.insets[0] + result.insets[2]);
 
     return result;
-}
+};
 
 function positionOffsetToPixels(offset, extent, metrics) {
     offset = offset.split(/\s+/);
@@ -277,10 +278,10 @@ ShapeValue.prototype.parseEllipsoid = function(args) {
     if (args && args[1]) {
         var radii = args[1].trim();
         radii = radii.split(/\s+/);
-        result['rx'] = radii[0];
-        result['ry'] = radii.length > 1 ? radii[1] : radii[0];
+        result.rx = radii[0];
+        result.ry = radii.length > 1 ? radii[1] : radii[0];
     } else {
-        result['rx'] = result['ry'] = 'closest-side';
+        result.rx = result.ry = 'closest-side';
     }
 
     var resolvedPositions = [];
@@ -305,35 +306,35 @@ ShapeValue.prototype.parseEllipsoid = function(args) {
         resolvedPositions[0] = resolvedPositions[1];
         resolvedPositions[1] = swap;
     }
-    result['cx'] = resolvedPositions[0];
-    result['cy'] = resolvedPositions[1];
+    result.cx = resolvedPositions[0];
+    result.cy = resolvedPositions[1];
 
     return result;
-}
+};
 
 ShapeValue.prototype.parseCircle = function(args, box, metrics) {
     var result = this.parseEllipsoid(args);
-    result['type'] = 'circle';
-    result['cx'] = positionOffsetToPixels(result['cx'], box.width, metrics);
-    result['cy'] = positionOffsetToPixels(result['cy'], box.height, metrics);
-    result['r'] = radiusToPixels(result['rx'], [
-        Math.abs(result['cx']), Math.abs(box.width - result['cx']),
-        Math.abs(result['cy']), Math.abs(box.height - result['cy'])
+    result.type = 'circle';
+    result.cx = positionOffsetToPixels(result.cx, box.width, metrics);
+    result.cy = positionOffsetToPixels(result.cy, box.height, metrics);
+    result.r = radiusToPixels(result.rx, [
+        Math.abs(result.cx), Math.abs(box.width - result.cx),
+        Math.abs(result.cy), Math.abs(box.height - result.cy)
     ], Math.sqrt((box.width * box.width + box.height * box.height) / 2), metrics);
-    delete result['rx'];
-    delete result['ry'];
+    delete result.rx;
+    delete result.ry;
     return result;
-}
+};
 
 ShapeValue.prototype.parseEllipse = function(args, box, metrics) {
     var result = this.parseEllipsoid(args);
-    result['type'] = 'ellipse';
-    result['cx'] = positionOffsetToPixels(result['cx'], box.width, metrics);
-    result['cy'] = positionOffsetToPixels(result['cy'], box.height, metrics);
-    result['rx'] = radiusToPixels(result['rx'], [Math.abs(result['cx']), Math.abs(box.width - result['cx'])], box.width, metrics);
-    result['ry'] = radiusToPixels(result['ry'], [Math.abs(result['cy']), Math.abs(box.height - result['cy'])], box.height, metrics);
+    result.type = 'ellipse';
+    result.cx = positionOffsetToPixels(result.cx, box.width, metrics);
+    result.cy = positionOffsetToPixels(result.cy, box.height, metrics);
+    result.rx = radiusToPixels(result.rx, [Math.abs(result.cx), Math.abs(box.width - result.cx)], box.width, metrics);
+    result.ry = radiusToPixels(result.ry, [Math.abs(result.cy), Math.abs(box.height - result.cy)], box.height, metrics);
     return result;
-}
+};
 
 ShapeValue.prototype.parsePolygon = function(args, box, metrics) {
     args = args.split(/\s*,\s*/);
@@ -345,13 +346,13 @@ ShapeValue.prototype.parsePolygon = function(args, box, metrics) {
     var points = args.map(function(point) {
         var coords = point.split(/\s+/);
         return { x: metrics.toPixels(coords[0], box.width), y: metrics.toPixels(coords[1], box.height) };
-    })
+    });
     return {
         type: 'polygon',
         'fillRule': rule,
         'points': points
-    }
-}
+    };
+};
 
 ShapeValue.prototype.computeClip = function(referenceBox, metrics)
 {
@@ -361,13 +362,13 @@ ShapeValue.prototype.computeClip = function(referenceBox, metrics)
     var marginWidth = metrics.margins[3] + metrics.margins[1];
     var marginHeight = metrics.margins[0] + metrics.margins[2];
     return {x: -referenceBox.x - marginLeft, y: -referenceBox.y - marginTop, width: metrics.borderBox.width + marginWidth, height: metrics.borderBox.height + marginHeight};
-}
+};
 
 ShapeValue.prototype.parseShapeMargin = function(margin, box, metrics) {
     return parseInt(margin) ? Math.max(0, metrics.toPixels(margin, box.width)) : 0;
-}
+};
 
 ShapeValue.prototype.parseShapeImageThreshold = function(threshold) {
     var value = parseFloat(threshold);  // FIXME: disallow non-numerical values
     return value ? Math.min(Math.max(0, value), 1.0) : 0;
-}
+};

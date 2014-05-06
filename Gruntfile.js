@@ -22,8 +22,8 @@ See the License for the specific language governing permissions and\n\
 limitations under the License.\n\
 */\n\
 \n\
-!function(scope) {\n"use strict";\n\n',
-        footer: '\nscope.ShapesPolyfill = new Polyfill(scope);\n}(window);',
+;(function(scope) {\n"use strict";\n\n',
+        footer: '\nscope.ShapesPolyfill = new Polyfill(scope);\n})(window);',
 
         concat: {
             options: {
@@ -53,11 +53,22 @@ limitations under the License.\n\
             },
             js: {
                 files: project.files,
-                tasks: ['concat', 'uglify']
+                tasks: ['build']
+            }
+        },
+
+        jshint: {
+            source: {
+                src: ['src/*.js']
+            },
+            dist: {
+                /* minification triggers some lint warnings */
+                src: ['shapes-polyfill.js']
             }
         }
     });
 
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -66,6 +77,7 @@ limitations under the License.\n\
         grunt.log.writeln('Hi there. The current supported targets are:');
         grunt.log.writeln('watch: watch src files for changes and build when a change occurs');
         grunt.log.writeln('build: concat & minify src files into a .js and .min.js file');
+        grunt.log.writeln('jshint: lint the source, can be called as jshint:source or jshint:dist');
     });
-    grunt.registerTask('build', ['concat', 'uglify']);
+    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify', 'jshint:dist']);
 }

@@ -30,7 +30,7 @@ function createRoundedRectForInset(inset, margin) {
     var topRight = toSize(inset.radii[1]);
     var bottomRight = toSize(inset.radii[2]);
     var bottomLeft = toSize(inset.radii[3]);
-    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + 2 * margin, inset.height + 2 * margin)
+    var rect = new Rect(inset.x - margin, inset.y - margin, inset.width + 2 * margin, inset.height + 2 * margin);
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
@@ -114,15 +114,15 @@ ShapeInfo.prototype.onReady = function(callback) {
         callback();
     else
         this.callback = callback;
-}
+};
 
 ShapeInfo.prototype.leftExclusionEdge = function(line) { // { top, bottom, left, right }
     return this.geometry ? this.geometry.leftExclusionEdge(line.top, line.bottom) : line.left;
-}
+};
 
 ShapeInfo.prototype.rightExclusionEdge = function(line) { // { top, bottom, left, right }
     return this.geometry ? this.geometry.rightExclusionEdge(line.top, line.bottom) : line.right;
-}
+};
 
 function exclusionEdgeValue(x) { return x === undefined ? 0 : x; }
 
@@ -159,32 +159,30 @@ ShapeInfo.prototype.computeStepOffsets = function(step) {
     }
 
     return offsets;
-}
+};
 
 ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
     var dx = this.shapeValue.box.x + this.metrics.margins[3];
     var dy = this.metrics.margins[0] + this.shapeValue.box.y;
-    var offsets = (this.metrics.cssFloat === 'left')
-        ? this.geometry.rightExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit)
-        : this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
+    var offsets = (this.metrics.cssFloat === 'left') ?
+        this.geometry.rightExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit) :
+        this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
 
     var result = [];
     var y = dy;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset = offsets[i].x === undefined
-            ? 0
-            : Math.min(this.metrics.marginBox.width, (this.metrics.cssFloat === 'left')
-            ? offsets[i].x + dx
-            : this.metrics.marginBox.width - (offsets[i].x + dx));
+        var layoutOffset =
+            offsets[i].x === undefined ? 0 : Math.min(this.metrics.marginBox.width,
+            (this.metrics.cssFloat === 'left') ? offsets[i].x + dx : this.metrics.marginBox.width - (offsets[i].x + dx));
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
         y += offsets[i].height;
     }
     
     return result;
-}
+};
 
 ShapeInfo.prototype.offsets = function(parameters) {
     if (this.geometry instanceof RoundedRect)
         return (parameters && parameters.mode) == "step" ? this.computeStepOffsets(parameters.step) : this.computeAdaptiveOffsets(parameters.limit);
     return  this.computeStepOffsets(parameters.step);
-}
+};

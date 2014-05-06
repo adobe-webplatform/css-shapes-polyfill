@@ -32,7 +32,7 @@ function Polyfill(scope) {
 
 function fakeIt(element, offsets) {
     var wrapper = document.createElement('div'),
-        styles, prop;
+        styles;
 
     offsets.forEach(function(offset, i) {
         var height = offset.bottom - offset.top;
@@ -43,8 +43,8 @@ function fakeIt(element, offsets) {
             width: offset.offset + 'px',
             height: height + 'px',
             clear: offset.cssFloat
-        }
-        for (prop in styles)
+        };
+        for (var prop in styles)
             sandbag.style[prop] = styles[prop];
         wrapper.appendChild(sandbag);
     });
@@ -57,7 +57,7 @@ function fakeIt(element, offsets) {
         'z-index': '-1' // Absolutely positioning the child normally forces it to the top
     };
 
-    for (prop in styles)
+    for (var prop in styles)
         wrapper.style[prop] = styles[prop];
 
     var parent = element.parentNode, subwrapper,
@@ -70,7 +70,7 @@ function fakeIt(element, offsets) {
         width: '100%', // will fill the whole width, FF does 'auto' differently
         height: parent.clientHeight - borderHeight,
         left: '0'
-    }
+    };
 
     subwrapper = document.createElement('div');
     for (prop in styles)
@@ -104,20 +104,20 @@ Polyfill.prototype.polyfill = function(element, settings) {
         if (settings && settings.callback && typeof settings.callback === 'function')
             settings.callback.call(self.scope);
     });
-}
+};
 
 Polyfill.prototype.removePolyfill = function(element) {
     var oldParent = element.parentNode;
-    for (oldParent = element.parentNode
-        ; !oldParent || !oldParent.hasAttribute('data-shape-outside-container')
-        ; oldParent = oldParent.parentNode);
+    for (oldParent = element.parentNode;
+        !oldParent || !oldParent.hasAttribute('data-shape-outside-container');
+        oldParent = oldParent.parentNode);
 
     if (!oldParent)
         return;
 
     oldParent.parentNode.insertBefore(element, oldParent);
     oldParent.parentNode.removeChild(oldParent);
-}
+};
 
 function debounce(func, wait) {
     var timeout;
@@ -128,7 +128,7 @@ function debounce(func, wait) {
             timeout = null;
             func.apply(context, args);
         }, wait);
-    }
+    };
 }
 
 Polyfill.prototype.run = function(settings) {
@@ -174,10 +174,10 @@ Polyfill.prototype.run = function(settings) {
     var els = document.querySelectorAll('[data-shape-outside]');
     for (var i = 0; i < els.length; i++)
         this.polyfill(els[i], settings);
-}
+};
 
 Polyfill.prototype.teardown = function() {
     var els = document.querySelectorAll('[data-shape-outside]');
     for (var i = 0; i < els.length; i++)
         this.removePolyfill(els[i]);
-}
+};

@@ -15,7 +15,8 @@ limitations under the License.
 
 function getStyleSheetElements() {
     var doc = document,
-        stylesheets = [];
+        stylesheets = [],
+        i, len;
 
     if (typeof doc.querySelectorAll == 'function') {
         // shiny new browsers
@@ -30,7 +31,7 @@ function getStyleSheetElements() {
         var tags = doc.getElementsByTagName("link");
 
         if (tags.length) {
-            for (var i = 0, len = tags.length; i < len; i++) {
+            for (i = 0, len = tags.length; i < len; i++) {
                 if (tags[i].getAttribute('rel') === "stylesheet") {
                     stylesheets.push(tags[i]);
                 }
@@ -39,7 +40,7 @@ function getStyleSheetElements() {
 
         // <style>
         tags = doc.getElementsByTagName("style");
-        for (var i=0, len = tags.length; i < len; i++) {
+        for (i=0, len = tags.length; i < len; i++) {
             stylesheets.push(tags[i]);
         }
     }
@@ -69,7 +70,7 @@ StyleSheet.prototype.load = function(onSuccess, onError, scope) {
                     onError.call(scope, self);
                 }
             }
-        }
+        };
 
         xhr.open('GET', this.url);
         try {
@@ -110,12 +111,12 @@ StyleLoader.prototype.init = function() {
         this.stylesheets.push(stylesheet);
         stylesheet.load(this.onStyleSheetLoad, this.onStyleSheetError, this);
     }
-}
+};
 
 StyleLoader.prototype.onStyleSheetLoad = function(stylesheet) {
     this.queueCount--;
     this.onComplete.call(this);
-}
+};
 
 
 StyleLoader.prototype.onStyleSheetError = function(stylesheet) {
@@ -132,14 +133,14 @@ StyleLoader.prototype.onStyleSheetError = function(stylesheet) {
             return;
         }
     }
-}
+};
 
 StyleLoader.prototype.onComplete = function() {
     if (this.queueCount === 0) {
         // run the callback after all stylesheet contents have loaded
         this.callback.call(this, this.stylesheets);
     }
-}
+};
 
 function StylePolyfill(callback) {
     this.callback = callback || function() {};
@@ -153,7 +154,7 @@ StylePolyfill.prototype.onStylesLoaded = function(stylesheets) {
     // use : and ; as delimiters, except between ()
     // this will be sufficient for most, but not all cases, eg: rectangle(calc(100%))
     var selector = "\\s*([^{}]*[^\\s])\\s*{[^\\}]*";
-    var value = "\\s*:\\s*((?:[^;\\(]|\\([^\\)]*\\))*)\s*;";
+    var value = "\\s*:\\s*((?:[^;\\(]|\\([^\\)]*\\))*)\\s*;";
 
     var re, match;
 
@@ -161,7 +162,7 @@ StylePolyfill.prototype.onStylesLoaded = function(stylesheets) {
     properties.forEach(function(property) {
         re = new RegExp(selector + "(" + property + ")" + value, "ig");
         stylesheets.forEach(function(stylesheet) {
-            while (match = re.exec(stylesheet.cssText)) {
+            while ((match = re.exec(stylesheet.cssText)) !== null) {
                 rules.push({
                     selector: match[1],
                     property: match[2],
@@ -172,4 +173,4 @@ StylePolyfill.prototype.onStylesLoaded = function(stylesheets) {
     });
 
     this.callback(rules);
-}
+};

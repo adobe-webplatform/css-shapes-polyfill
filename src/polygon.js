@@ -25,14 +25,14 @@ function areCollinearPoints(p0, p1, p2) {
 }
 
 function areCoincidentPoints(p0, p1) { 
-    return p0.x == p1.x && p0.y == p1.y 
+    return p0.x == p1.x && p0.y == p1.y;
 }
 
 function isPointOnLineSegment(lineStartPoint, lineEndPoint, point)
 {
-    return point.x >= Math.min(lineStartPoint.x, lineEndPoint.x)
-        && point.x <= Math.max(lineStartPoint.x, lineEndPoint.x)
-        && areCollinearPoints(lineStartPoint, lineEndPoint, point);
+    return point.x >= Math.min(lineStartPoint.x, lineEndPoint.x) &&
+        point.x <= Math.max(lineStartPoint.x, lineEndPoint.x) &&
+        areCollinearPoints(lineStartPoint, lineEndPoint, point);
 }
 
 function PolygonEdge(polygon, vertex1Index, vertex2Index, edgeIndex) {
@@ -60,19 +60,19 @@ Object.defineProperty(PolygonEdge.prototype, "maxX", {
 
 PolygonEdge.prototype.containsPoint = function(point) {
     return isPointOnLineSegment(this.vertex1, this.vertex2, point);
-}
+};
 
 PolygonEdge.prototype.overlapsYRange = function(y1, y2) { // y range: y1 <= y <= y2
     var edgeY1 = this.vertex1.y;
     var edgeY2 = this.vertex2.y;
     return y2 >= Math.min(edgeY1, edgeY2) && y1 <= Math.max(edgeY1, edgeY2);
-}
+};
 
 PolygonEdge.prototype.isWithinYRange = function(y1, y2) { // y range: y1 <= y <= y2
     var edgeY1 = this.vertex1.y;
     var edgeY2 = this.vertex2.y;
     return y1 <= Math.min(edgeY1, edgeY2) && y2 >= Math.max(edgeY1, edgeY2);
-}
+};
 
 PolygonEdge.prototype.inwardNormal = function()
 {
@@ -81,13 +81,13 @@ PolygonEdge.prototype.inwardNormal = function()
     var dy = this.vertex2.y - this.vertex1.y;
     var edgeLength = Math.sqrt(dx*dx + dy*dy);
     return {x: -dy/edgeLength, y: dx/edgeLength};
-}
+};
 
 PolygonEdge.prototype.outwardNormal = function()
 {
     var n = this.inwardNormal();
     return {x: -n.x, y: -n.y};
-}
+};
 
 PolygonEdge.prototype.xIntercept = function(y) {
     var vertex1Y = this.vertex1.y;
@@ -103,7 +103,7 @@ PolygonEdge.prototype.xIntercept = function(y) {
         return (vertex1Y > vertex2Y) ? this.vertex1.x : this.vertex2.x;
 
     return this.vertex1.x + ((y - vertex1Y) * (this.vertex2.x - this.vertex1.x) / (vertex2Y - vertex1Y));
-}
+};
 
 /* Clip the edge line segment to the vertical range y1,y2 and then return 
  * the clipped line segment's horizontal range as {x1, x2}, where x2 >= x1;
@@ -129,7 +129,7 @@ PolygonEdge.prototype.clippedEdgeXRange = function(y1, y2) {
     var xForY1 = (minYVertex.y < y1) ? this.xIntercept(y1) : minYVertex.x;
     var xForY2 = (maxYVertex.y > y2) ? this.xIntercept(y2) : maxYVertex.x;
     return {x1: Math.min(xForY1, xForY2), x2: Math.max(xForY1, xForY2)};
-}
+};
 
 /* Clip the circle to the vertical range y1,y2 and return the extent of the clipped circle's 
  * projection on the X axis as {x1, x2}, where x2 >= x1. This method assumes that the circle
@@ -139,14 +139,15 @@ function clippedCircleXRange(center, radius, y1, y2) {
     if (center.y >= y1 && center.y <= y2)
         return {x1: center.x - radius, x2: center.x + radius};
 
+    var yi, xi;
     if (y2 < center.y) {
-        var yi = y2 - center.y;
-        var xi = ellipseXIntercept(yi, radius, radius);
+        yi = y2 - center.y;
+        xi = ellipseXIntercept(yi, radius, radius);
         return {x1: center.x - xi, x2: center.x + xi};
     }
 
-    var yi =  y1 - center.y;
-    var xi = ellipseXIntercept(yi, radius, radius);
+    yi =  y1 - center.y;
+    xi = ellipseXIntercept(yi, radius, radius);
     return {x1: center.x - xi, x2: center.x + xi};
 }
 
@@ -162,7 +163,7 @@ function OffsetEdge(edge, normalUnitVector) {
     this.m_vertex2 = {x: edge.vertex2.x + dx, y: edge.vertex2.y + dy};
 }
 
-OffsetEdge.prototype = new PolygonEdge;
+OffsetEdge.prototype = new PolygonEdge();
 
 Object.defineProperty(OffsetEdge.prototype, "vertex1", {
     get: function() { return this.m_vertex1; }
@@ -215,7 +216,7 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
         maxY = Math.max(y, maxY);
         vertex1Index = vertex2Index;
 
-    } while (vertex1Index != 0);
+    } while (vertex1Index !== 0);
 
     if (edgeIndex > 3) {
         var firstEdge = edges[0];
@@ -226,7 +227,7 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
         }
     }
 
-    if (shapeMargin == 0) {
+    if (shapeMargin === 0) {
         this.shapeMarginEdges = edges;
     } else {
         var shapeMarginEdges = [];
@@ -241,13 +242,13 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
     this.bounds = new Rect(minX - shapeMargin, minY - shapeMargin, shapeMargin*2 + (maxX - minX), shapeMargin*2 + (maxY - minY));
 }
 
-Polygon.prototype.vertexAt = function(index) { return this.m_vertices[index]; }
+Polygon.prototype.vertexAt = function(index) { return this.m_vertices[index]; };
 
 Object.defineProperty(Polygon.prototype, "numberOfVertices", {
     get: function() { return this.m_vertices.length; }
 });
 
-Polygon.prototype.edgeAt = function(index) { return this.m_edges[index]; }
+Polygon.prototype.edgeAt = function(index) { return this.m_edges[index]; };
 
 Object.defineProperty(Polygon.prototype, "numberOfEdges", {
     get: function() { return this.m_edges.length; }
@@ -257,17 +258,17 @@ Object.defineProperty(Polygon.prototype, "isEmpty", {
     get: function() { return this.numberOfEdges < 3 || this.bounds.isEmpty; }
 });
 
-Polygon.prototype.vertices = function() { return this.m_vertices.slice(0); }
-Polygon.prototype.edges = function() { return this.m_edges.slice(0); }
+Polygon.prototype.vertices = function() { return this.m_vertices.slice(0); };
+Polygon.prototype.edges = function() { return this.m_edges.slice(0); };
 
 Polygon.prototype.overlapsYRange = function(y1, y2) { // y range: y1 <= y < y2
     return y1 < this.bounds.maxY && y2 >= this.bounds.y;
-}
+};
 
 Polygon.prototype.nextVertexIndex = function(vertexIndex, clockwise) {
     var nVertices = this.numberOfVertices;
     return ((clockwise) ? vertexIndex + 1 : vertexIndex - 1 + nVertices) % nVertices;
-}
+};
 
 Polygon.prototype.nextEdgeVertexIndex = function(vertex1Index, clockwise) {
     var nVertices = this.numberOfVertices;
@@ -284,7 +285,7 @@ Polygon.prototype.nextEdgeVertexIndex = function(vertex1Index, clockwise) {
     }
 
     return vertex2Index;
-}
+};
 
 Polygon.prototype.containsPointEvenOdd = function(point) {
     var crossingCount = 0;
@@ -300,8 +301,8 @@ Polygon.prototype.containsPointEvenOdd = function(point) {
                 ++crossingCount;
         }
     }
-    return (crossingCount & 1) != 0
-}
+    return (crossingCount & 1) !== 0;
+};
 
 Polygon.prototype.containsPointNonZero = function(point) {
     var windingNumber = 0;
@@ -319,8 +320,8 @@ Polygon.prototype.containsPointNonZero = function(point) {
                 --windingNumber;
         }
     }
-    return windingNumber != 0;
-}
+    return windingNumber !== 0;
+};
 
 Polygon.prototype.containsPoint = function(point) {
     if (!this.bounds.containsPoint(point))
@@ -336,7 +337,7 @@ Polygon.prototype.edgeVerticesThatOverlapYRange = function(y1, y2) {
             result.push(vertex);
     }
     return result;
-}
+};
 
 Polygon.prototype.edgesThatOverlapYRange = function(y1, y2) {
     var result = [];
@@ -346,7 +347,7 @@ Polygon.prototype.edgesThatOverlapYRange = function(y1, y2) {
             result.push(edge);
     }
     return result;
-}
+};
 
 Polygon.prototype.shapeMarginEdgesThatOverlapYRange = function(y1, y2) {
     var result = [];
@@ -356,7 +357,7 @@ Polygon.prototype.shapeMarginEdgesThatOverlapYRange = function(y1, y2) {
             result.push(edge);
     }
     return result;
-}
+};
 
 function compareEdgeMinX(edge1, edge2) { return edge1.minX - edge2.minX; }
 
@@ -366,18 +367,18 @@ Polygon.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     if (this.isEmpty || !this.bounds.overlapsYRange(y1, y2))
         return undefined;
 
-    var result;
+    var result, i, xRange;
 
     var overlappingEdges = this.shapeMarginEdgesThatOverlapYRange(y1, y2);
-    if (overlappingEdges.length != 0) {
+    if (overlappingEdges.length !== 0) {
         overlappingEdges.sort(compareEdgeMinX);
 
         result = overlappingEdges[0].clippedEdgeXRange(y1, y2).x1;
-        for (var i = 1; i < overlappingEdges.length; i++) {
+        for (i = 1; i < overlappingEdges.length; i++) {
             if (overlappingEdges[i].minX > result)
                 break;
-            var xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
-            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1)
+            xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
+            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1);
         }
     }
 
@@ -386,17 +387,17 @@ Polygon.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
         var overlappingVertices = this.edgeVerticesThatOverlapYRange(y1 - shapeMargin, y2 + shapeMargin);
         overlappingVertices.sort(compareVertexXIncreasing); 
 
-        for (var i = 0; i < overlappingVertices.length; i++) {
+        for (i = 0; i < overlappingVertices.length; i++) {
             // FIXME: short-circuit
-            var xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
-            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1)
+            xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
+            result = (result === undefined) ? xRange.x1 : Math.min(result, xRange.x1);
         }
     }
 
     if (result === undefined)
         console.error("Polygon leftExclusionEdge() failed");
     return result;
-}
+};
 
 function compareEdgeMaxX(edge1, edge2) { return edge2.maxX - edge1.maxX; }
 
@@ -406,18 +407,18 @@ Polygon.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     if (this.isEmpty || !this.bounds.overlapsYRange(y1, y2))
         return undefined;
 
-    var result;
+    var result, i, xRange;
 
     var overlappingEdges = this.shapeMarginEdgesThatOverlapYRange(y1, y2);
-    if (overlappingEdges.length != 0) {
+    if (overlappingEdges.length !== 0) {
         overlappingEdges.sort(compareEdgeMaxX);
 
-        var result = overlappingEdges[0].clippedEdgeXRange(y1, y2).x2;
-        for (var i = 1; i < overlappingEdges.length; i++) {
+        result = overlappingEdges[0].clippedEdgeXRange(y1, y2).x2;
+        for (i = 1; i < overlappingEdges.length; i++) {
             if (overlappingEdges[i].maxX < result)
                 break;
-            var xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
-            result = Math.max(result, xRange.x2)
+            xRange = overlappingEdges[i].clippedEdgeXRange(y1, y2);
+            result = Math.max(result, xRange.x2);
         }
     }
 
@@ -426,14 +427,14 @@ Polygon.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
         var overlappingVertices = this.edgeVerticesThatOverlapYRange(y1 - shapeMargin, y2 + shapeMargin);
         overlappingVertices.sort(compareVertexXDecreasing); 
 
-        for (var i = 0; i < overlappingVertices.length; i++) {
+        for (i = 0; i < overlappingVertices.length; i++) {
             // FIXME: short-circuit
-            var xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
-            result = (result === undefined) ? xRange.x2 : Math.max(result, xRange.x2)
+            xRange = clippedCircleXRange(overlappingVertices[i], shapeMargin, y1, y2);
+            result = (result === undefined) ? xRange.x2 : Math.max(result, xRange.x2);
         }
     }
 
     if (result === undefined)
         console.error("Polygon rightExclusionEdge() failed");
     return result;
-}
+};

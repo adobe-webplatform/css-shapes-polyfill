@@ -32,8 +32,8 @@ Object.defineProperty(RasterIntervals, "none", {value:{}, writeable:false});
 Object.defineProperty(RasterIntervals.prototype, "minY", { get: function() { return -this.yOffset; } });
 Object.defineProperty(RasterIntervals.prototype, "maxY", { get: function() { return this.size - this.yOffset; } });
 
-RasterIntervals.prototype.intervalAt = function(y) { return this.intervals[y + this.yOffset]; }
-RasterIntervals.prototype.setIntervalAt = function(y, value) { this.intervals[y + this.yOffset] = value; }
+RasterIntervals.prototype.intervalAt = function(y) { return this.intervals[y + this.yOffset]; };
+RasterIntervals.prototype.setIntervalAt = function(y, value) { this.intervals[y + this.yOffset] = value; };
 
 RasterIntervals.prototype.uniteIntervalAt = function(y, interval) {
     var intervalAtY = this.intervalAt(y);
@@ -43,14 +43,14 @@ RasterIntervals.prototype.uniteIntervalAt = function(y, interval) {
         intervalAtY.startX = Math.min(intervalAtY.startX, interval.startX);
         intervalAtY.endX = Math.max(intervalAtY.endX, interval.endX);
     }
-}
+};
 
 RasterIntervals.prototype.intervalAtContains = function(y, interval) {
     var intervalAtY = this.intervalAt(y);
     if (intervalAtY == RasterIntervals.none)
         return false;
     return intervalAtY.startX <= interval.startX && intervalAtY.endX >= interval.endX;
-}
+};
 
 RasterIntervals.prototype.computeBounds = function() {
     var minX, maxX, minY, maxY;
@@ -66,7 +66,7 @@ RasterIntervals.prototype.computeBounds = function() {
         maxX = (maxX === undefined) ? intervalAtY.endX : Math.max(maxX, intervalAtY.endX);
     }
     return new Rect(minX, minY, maxX - minX + 1, maxY - minY + 1);
-}
+};
 
 function ShapeMarginIntervalGenerator(shapeMargin) {
     this.shapeMargin = shapeMargin;
@@ -79,7 +79,7 @@ ShapeMarginIntervalGenerator.prototype.generateIntervalAt = function(atY, forInt
     var xInterceptsIndex = Math.abs(atY - forInterval.y);
     var dx = (xInterceptsIndex > this.shapeMargin) ? 0 : this.xIntercepts[xInterceptsIndex];
     return new RasterInterval(atY, forInterval.startX - dx, forInterval.endX + dx);
-}
+};
 
 RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
     var mig = new ShapeMarginIntervalGenerator(shapeMargin);
@@ -92,8 +92,9 @@ RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
 
         var marginY0 = Math.max(this.minY, y - shapeMargin);
         var marginY1 = Math.min(this.maxY - 1, y + shapeMargin);
+        var marginY;
 
-        for (var marginY = y - 1; marginY >= marginY0; --marginY) {
+        for (marginY = y - 1; marginY >= marginY0; --marginY) {
             if (marginY > 0 && this.intervalAtContains(marginY, intervalAtY))
                 break;
             result.uniteIntervalAt(marginY, mig.generateIntervalAt(marginY, intervalAtY));
@@ -101,14 +102,14 @@ RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
 
         result.uniteIntervalAt(y, mig.generateIntervalAt(y, intervalAtY));
 
-        for (var marginY = y + 1; marginY <= marginY1; ++marginY) {
+        for (marginY = y + 1; marginY <= marginY1; ++marginY) {
             if (marginY < this.maxY && this.intervalAtContains(marginY, intervalAtY))
                 break;
             result.uniteIntervalAt(marginY, mig.generateIntervalAt(marginY, intervalAtY));
         }
     }
     return result;
-}
+};
 
 function RasterImage(image) {
     this.width = image.width;
@@ -126,7 +127,7 @@ function RasterImage(image) {
     }
 }
 
-RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; }
+RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; };
 
 RasterImage.prototype.computeIntervals = function(threshold, clip) {
     var intervals = new RasterIntervals(-clip.y, clip.height);
@@ -145,7 +146,7 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
         }
     }
     return intervals;
-}
+};
 
 function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.url = url;
@@ -167,7 +168,7 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.image.onerror = function() {
         // FIXME: We need more graceful error handling, but this will do for now
         console.error("Unable to load the image ", url);
-    }
+    };
 
     this.image.src = url;
 }
@@ -176,29 +177,29 @@ function initRaster(raster, clip) {
     var image = new RasterImage(raster.image);
     raster.intervals = image.computeIntervals(raster.shapeImageThreshold, clip);
     if (raster.shapeMargin > 0)
-        raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, clip)
+        raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, clip);
     raster.bounds = raster.intervals.computeBounds();
     raster.image = undefined;
 }
 
 Raster.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     var intervals = this.intervals;
-    var x = undefined;
+    var x; // = undefined;
     for (var y = Math.max(y1, this.clip.y); y <= y2 && y < this.clip.maxY; y++) {
         var endX = intervals.intervalAt(y).endX;
-        if (x == undefined || (endX !== undefined && endX > x))
+        if (x === undefined || (endX !== undefined && endX > x))
             x = endX;
     }
     return x;
-}
+};
 
 Raster.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     var intervals = this.intervals;
-    var x = undefined;
+    var x; // = undefined;
     for (var y = Math.max(y1, this.clip.y); y <= y2 && y < this.clip.maxY; y++) {
         var startX = intervals.intervalAt(y).startX;
-        if (x == undefined || (startX !== undefined && startX < x))
+        if (x === undefined || (startX !== undefined && startX < x))
             x = startX;
     }
     return x;
-}
+};

@@ -22,7 +22,7 @@ function Metrics(element) {
 
     // Used values already in px, but may be "" in some browsers, eg FF
     // These values are stored in their CSS order top, right, bottom, left
-    var parseLength = function(length) { return length && length.length ? parseInt(length) : 0; }
+    var parseLength = function(length) { return length && length.length ? parseInt(length) : 0; };
     this.margins = [computedStyle.marginTop, computedStyle.marginRight, computedStyle.marginBottom, computedStyle.marginLeft];
     this.margins = this.margins.map(parseLength);
     this.borders = [computedStyle.borderTopWidth, computedStyle.borderRightWidth, computedStyle.borderBottomWidth, computedStyle.borderLeftWidth];
@@ -67,7 +67,7 @@ Metrics.prototype.unitToPx = function(unit) {
     this.units[unit] = parseFloat(getComputedStyle(this.element).getPropertyValue('line-height'));
     this.element.style.setProperty('line-height', cached);
     return this.units[unit];
-}
+};
 
 Metrics.prototype.getUnitsMap = function(element) {
     var units = ['em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', 'cm', 'mm', 'in', 'px', 'pt', 'pc'];
@@ -88,7 +88,7 @@ Metrics.prototype.getUnitsMap = function(element) {
     child.parentNode.removeChild(child);
 
     return result;
-}
+};
 
 Metrics.prototype.toPixels = function(length, percentageBase) {
     var split = /([\-0-9\.]*)([a-z%]*)/.exec(length);
@@ -98,4 +98,4 @@ Metrics.prototype.toPixels = function(length, percentageBase) {
     if (split[2] === '%')
         return split[1] * percentageBase / 100;
     return split[1] * this.unitToPx(split[2]);
-}
+};
