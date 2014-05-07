@@ -156,6 +156,7 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.clip = clip;
 
     var raster = this;
+    this.image.crossOrigin = "anonymous";
     this.image.onload = function(event) {
         try {
             initRaster(raster, clip);

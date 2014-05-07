@@ -672,6 +672,7 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.clip = clip;
 
     var raster = this;
+    this.image.crossOrigin = "anonymous";
     this.image.onload = function(event) {
         try {
             initRaster(raster, clip);
@@ -1212,7 +1213,7 @@ ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
     var result = [];
     var y = dy;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset = 
+        var layoutOffset =
             offsets[i].x === undefined ? 0 : Math.min(this.metrics.marginBox.width,
             (this.metrics.cssFloat === 'left') ? offsets[i].x + dx : this.metrics.marginBox.width - (offsets[i].x + dx));
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
