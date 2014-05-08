@@ -627,15 +627,15 @@ RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
     return result;
 };
 
-function RasterImage(image) {
-    this.width = image.width;
-    this.height = image.height;
+function RasterImage(image, box) {
+    this.width = box.width;
+    this.height = box.height;
 
     var canvas = document.createElement("canvas");
     canvas.width = this.width;
     canvas.height = this.height;
     var g = canvas.getContext("2d");
-    g.drawImage(image, 0, 0);
+    g.drawImage(image, 0, 0, this.width, this.height);
     try {
         this.imageData = g.getImageData(0, 0, this.width, this.height); // row major byte array of pixels, 4 bytes per pixel: RGBA
     } catch (e) {
@@ -646,8 +646,9 @@ function RasterImage(image) {
 RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; };
 
 RasterImage.prototype.computeIntervals = function(threshold, clip) {
-    var intervals = new RasterIntervals(-clip.y, clip.height);
-    for (var y = 0; y < this.height; y++) {
+    var intervals = new RasterIntervals(-clip.y, clip.height),
+        maxY = Math.min(clip.height, this.height);
+    for (var y = 0; y < maxY; y++) {
         var startX = -1;
         for (var x = 0; x < this.width; x++) {
             var alpha = this.alphaAt(x, y);
@@ -664,8 +665,9 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
     return intervals;
 };
 
-function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
+function Raster(url, box, shapeImageThreshold, shapeMargin, clip, whenReady) {
     this.url = url;
+    this.box = box;
     this.shapeImageThreshold = (256 * shapeImageThreshold);
     this.shapeMargin = shapeMargin;
     this.image = new Image();
@@ -691,7 +693,7 @@ function Raster(url, shapeImageThreshold, shapeMargin, clip, whenReady) {
 }
 
 function initRaster(raster, clip) {
-    var image = new RasterImage(raster.image);
+    var image = new RasterImage(raster.image, raster.box);
     raster.intervals = image.computeIntervals(raster.shapeImageThreshold, clip);
     if (raster.shapeMargin > 0)
         raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, clip);
@@ -1087,9 +1089,9 @@ function createRoundedRectForBox(box, margin) {
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
-function createRaster(url, shapeImageThreshold, shapeMargin, clip, doLayout) {
+function createRaster(url, box, shapeImageThreshold, shapeMargin, clip, doLayout) {
     var clipRect = new Rect(clip.x, clip.y, clip.width, clip.height);
-    return new Raster(url, shapeImageThreshold, shapeMargin, clipRect, doLayout);
+    return new Raster(url, box, shapeImageThreshold, shapeMargin, clipRect, doLayout);
 }
 
 function createPolygon(polygon, shapeMargin) {
@@ -1121,7 +1123,7 @@ function createShapeGeometry(shapeValue, whenReady) {
     }
 
     if (shapeValue.url)
-        return createRaster(shapeValue.url, shapeValue.shapeImageThreshold, shapeMargin, shapeValue.clip, whenReady);
+        return createRaster(shapeValue.url, shapeValue.box, shapeValue.shapeImageThreshold, shapeMargin, shapeValue.clip, whenReady);
 
     if (shapeValue.box) {
         geometry = createRoundedRectForBox(shapeValue.box, shapeMargin);

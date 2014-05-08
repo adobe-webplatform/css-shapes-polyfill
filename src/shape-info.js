@@ -45,9 +45,9 @@ function createRoundedRectForBox(box, margin) {
     return new RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight);
 }
 
-function createRaster(url, shapeImageThreshold, shapeMargin, clip, doLayout) {
+function createRaster(url, box, shapeImageThreshold, shapeMargin, clip, doLayout) {
     var clipRect = new Rect(clip.x, clip.y, clip.width, clip.height);
-    return new Raster(url, shapeImageThreshold, shapeMargin, clipRect, doLayout);
+    return new Raster(url, box, shapeImageThreshold, shapeMargin, clipRect, doLayout);
 }
 
 function createPolygon(polygon, shapeMargin) {
@@ -79,7 +79,7 @@ function createShapeGeometry(shapeValue, whenReady) {
     }
 
     if (shapeValue.url)
-        return createRaster(shapeValue.url, shapeValue.shapeImageThreshold, shapeMargin, shapeValue.clip, whenReady);
+        return createRaster(shapeValue.url, shapeValue.box, shapeValue.shapeImageThreshold, shapeMargin, shapeValue.clip, whenReady);
 
     if (shapeValue.box) {
         geometry = createRoundedRectForBox(shapeValue.box, shapeMargin);

@@ -13,12 +13,12 @@ function register(mocha, expect) {
         expect(Math.round(raster.rightExclusionEdge(y1, y2))).to.equal(expectedRight);
     }
 
-    function createRaster(url, shapeImageThreshold, shapeMargin, done) {
+    function createRaster(url, shapeImageThreshold, shapeMargin, done, box) {
         var clipRect = {x: 0, y: 0, maxX: 100, maxY: 100, width: 100, height: 100};
         if (url == undefined) return undefined;
         if (shapeImageThreshold == undefined) shapeImageThreshold = 0;
         if (shapeMargin == undefined) shapeMargin = 0;
-        return new Raster(url, shapeImageThreshold, shapeMargin, clipRect, done);
+        return new Raster(url, box ? box : clipRect, shapeImageThreshold, shapeMargin, clipRect, done);
     }
 
     describe("Raster Basics", function() {
@@ -453,6 +453,64 @@ function register(mocha, expect) {
             it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 75, 100, 22, 78)} );
         });
     });
+
+    describe("Image.left,rightExclusionEdge, (50x100px opaque, 50x100px transparent) at 0.5 scale", function() {
+        describe("shape-margin=0", function() {
+            var image;
+            before(function(done) {
+                image = createRaster("./resources/half-rectangle.png", 0, 0, done, { width: 50, height: 50 });
+            });
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 50, 0, 25); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -25, 25, 0, 25); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 25, 75, 0, 25); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -25, 75, 0, 25)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 25)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 25, 50, 0, 25)} );
+            it("line is above the image", function() { checkExclusionEdges(image, -50, -25, undefined, undefined)} );
+            it("line is below the image", function() { checkExclusionEdges(image, 75, 100, undefined, undefined)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image;
+            before(function(done) {
+                image = createRaster("./resources/half-rectangle.png", 0, 10, done, { width: 50, height: 50 });
+            });
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 50, -10, 35); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 75, -10, 35); });
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, -10, 35)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 25, 50, -10, 35)} );
+        });
+    });
+
+    describe("Image.left,rightExclusionEdge, (50x100px opaque, 50x100px transparent) at 2.0 scale", function() {
+        /* This is clipped to the margin-box [0, 0, 100, 100] */
+        describe("shape-margin=0", function() {
+            var image;
+            before(function(done) {
+                image = createRaster("./resources/half-rectangle.png", 0.5, 0, done, { width: 200, height: 200 });
+            });
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 200, 0, 100); });
+            it("line overlaps image vertical extent, above", function() { checkExclusionEdges(image, -25, 25, 0, 100); });
+            it("line overlaps image vertical extent, below", function() { checkExclusionEdges(image, 175, 225, undefined, undefined); });
+            it("line contains image vertical extent", function() { checkExclusionEdges(image, -25, 225, 0, 100)} );
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, 0, 100)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 175, 225, undefined, undefined)} );
+            it("line is above the image", function() { checkExclusionEdges(image, -50, -25, undefined, undefined)} );
+            it("line is below the image", function() { checkExclusionEdges(image, 225, 250, undefined, undefined)} );
+        });
+
+        describe("shape-margin=10", function() {
+            var image;
+            before(function(done) {
+                image = createRaster("./resources/half-rectangle.png", 0.5, 10, done, { width: 200, height: 200 });
+            });
+            it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 200, -10, 110); });
+            it("line equals image + shape-margin vertical extent", function() { checkExclusionEdges(image, -10, 225, -10, 110); });
+            it("line overlaps image's top part", function() { checkExclusionEdges(image, 0, 25, -10, 110)} );
+            it("line overlaps image's bottom part", function() { checkExclusionEdges(image, 175, 225, undefined, undefined)} );
+        });
+    });
+
 }
 
 return {'register': register};
