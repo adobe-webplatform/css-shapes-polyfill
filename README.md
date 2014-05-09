@@ -12,7 +12,7 @@ To use the polyfill, download or build `shapes-polyfill.js` or `shapes-polyfill.
 
     <script src='/shapes-polyfill.js'></script>
 
-After that, set any shape styles in `<link>` or `<style>` stylesheets accessible to your domain.
+After that, set any shape styles in `<link>` or `<style>` stylesheets accessible to your domain:
 
     .shape {
         float: left;
@@ -84,7 +84,7 @@ The polyfill isn't perfect, and will generally work best with simple shapes. If 
 
 The polyfill should work with all current versions of desktop and mobile browsers. Below is a table of support for Chrome (C), Firefox (FF), Internet Explorer (IE), Opera (O), Safari (S), Android (A), and iOS (iOS) browsers.
 
-<table class='browser-support'>
+<table>
   <tr>
     <th>C</th>
     <th>FF</th>
@@ -111,9 +111,10 @@ The polyfill should work with all current versions of desktop and mobile browser
 
 ## Feedback
 
-Please let us know if you have any feedback, including bugs.
+Please let us know if you have any feedback. If you run into any problems, you can file a [new issue][new-issue]. You can also reach us [@adobeweb][twitter].
 
 [new-issue]: https://github.com/adobe-webplatform/css-shapes-polyfill/issues/new
 [node]: http://nodejs.org
 [npm]: http://www.npmjs.org
 [grunt]: http://gruntjs.com
+[twitter]: http://twitter.com/adobeweb
