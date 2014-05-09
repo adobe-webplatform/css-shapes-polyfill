@@ -62,6 +62,7 @@ If you are interested in tinkering with the polyfill, you will need the followin
 * [grunt][grunt]
 
 To build
+
 1. Clone the source code
 2. From the command line, enter the source directory
 3. Run `npm install`
