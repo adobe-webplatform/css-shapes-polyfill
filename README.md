@@ -79,6 +79,7 @@ The polyfill isn't perfect, and will generally work best with simple shapes. If 
 * The implementation works by creating a series of floats approximating the shape's contour and parenting them within a zero-height div. As such, it may introduce line breaks if the original float shape occurs in the middle of a line of text.
 * Multiple shaped floats stacking or in close proximity may clear each other once the polyfill is applied.
 * The polyfill is slower than native implementations doing shapes layout (roughly 10-20x). You should weigh this as a performance concern.
+* IE does not support SVG image values, as its security model prevents grabbing [rendered SVG pixel values via canvas][svg-canvas-origin-clean].
 
 ## Browser Support
 
@@ -107,7 +108,7 @@ The polyfill should work with all current versions of desktop and mobile browser
   </tr>
 </table>
 
-[1] If you are not using images, the polyfill should work back to IE 9.
+[1] If you are not using cross-origin images, the polyfill should work back to IE 9. Also note the lack of SVG support, as of IE 11.
 
 ## Feedback
 
@@ -118,3 +119,4 @@ Please let us know if you have any feedback. If you run into any problems, you c
 [npm]: http://www.npmjs.org
 [grunt]: http://gruntjs.com
 [twitter]: http://twitter.com/adobeweb
+[svg-canvas-origin-clean]: http://svgopen.org/2010/papers/62-From_SVG_to_Canvas_and_Back/

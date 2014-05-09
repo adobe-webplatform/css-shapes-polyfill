@@ -173,8 +173,13 @@ Raster.prototype.init = function(callback) {
         callback();
     };
 
-    /* Try this approach for browsers that don't support CORS-enabled images (IE) */
-    if (!image.hasOwnProperty('crossOrigin') && URL && URL.createObjectURL) {
+    /* Try this approach for browsers that don't support
+     * CORS-enabled images (ie IE). Ideally we'd skip this
+     * for same-origin images, but we don't have a good test
+     * for that. */
+    if (!image.hasOwnProperty('crossOrigin') &&
+        window.URL &&
+        window.URL.createObjectURL) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
@@ -203,7 +208,7 @@ Raster.prototype.computeIntervals = function(image) {
         height = this.box.height,
         rasterImage = new RasterImage(image, width, height);
 
-    if (!rasterImage.hasData)
+    if (!rasterImage.hasData())
         return undefined;
 
     var intervals = new RasterIntervals(-clip.y, clip.height),
