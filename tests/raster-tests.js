@@ -26,12 +26,21 @@ function register(mocha, expect) {
         before(function(done) {
             raster = createRaster("./resources/half-rectangle.png", 0, 0, done);
         });
-        it("raster is-a Raster", function() { expect(raster).to.be.an.instanceof(Raster); });
+        it("raster is a Raster", function() { expect(raster).to.be.an.instanceof(Raster); });
         it("raster set url", function() { expect(raster.url).to.equal("./resources/half-rectangle.png"); });
         it("raster set shapeImageThreshold", function() { expect(raster.shapeImageThreshold).to.equal(0); });
         it("raster set shapeMargin", function() { expect(raster.shapeMargin).to.equal(0); });
         it("raster clip rectangle", function() { expect(raster.clip).not.null; });
         it("raster intervals is not null", function() { expect(raster.intervals).not.null; });
+    });
+
+    describe("Missing image", function() {
+        var image;
+        before(function(done) {
+            image = createRaster("./resources/i-am-not-a-real-image.png", 0, 0, done);
+        });
+        it("intervals are undefined", function() { expect(image.intervals).to.be.undefined; });
+        it("line equals image vertical extent", function() { checkExclusionEdges(image, 0, 100, 0, 100); });
     });
 
     describe("Image.left,rightExclusionEdge, (50x100px opaque, 50x100px transparent)", function() {

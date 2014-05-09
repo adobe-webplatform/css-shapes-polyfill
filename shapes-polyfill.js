@@ -529,6 +529,9 @@ Polygon.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     return result;
 };
 
+/* Loading an image can fail for several reasons. Try to log an
+ * error only once, and mark the appropriate values as undefined.
+ */
 function RasterInterval(y, startX, endX) {
     this.y = y;
     this.startX = startX;
@@ -627,35 +630,108 @@ RasterIntervals.prototype.computeMarginIntervals = function(shapeMargin, clip) {
     return result;
 };
 
-function RasterImage(image, box) {
-    this.width = box.width;
-    this.height = box.height;
+function error(url, exception) {
+    console.log("Unable to load image ", url, ". It's probably missing or you've run into a CORS issue.");
+    if (exception)
+        console.log("The exact problem was ", exception);
+}
 
+function RasterImage(image, width, height) {
     var canvas = document.createElement("canvas");
-    canvas.width = this.width;
-    canvas.height = this.height;
+    this.width = canvas.width = width;
+    this.height = canvas.height = height;
     var g = canvas.getContext("2d");
-    g.drawImage(image, 0, 0, this.width, this.height);
+    g.drawImage(image, 0, 0, width, height);
     try {
-        this.imageData = g.getImageData(0, 0, this.width, this.height); // row major byte array of pixels, 4 bytes per pixel: RGBA
+        this.imageData = g.getImageData(0, 0, width, height);
     } catch (e) {
-        console.error(e);
+        error(image.src, e);
+        /* imageData will be undefined */
     }
 }
 
-RasterImage.prototype.alphaAt = function(x, y) { return this.imageData.data[(x * 4 + 3) + y * this.width * 4]; };
+RasterImage.prototype.hasData = function() { return !!this.imageData; };
 
-RasterImage.prototype.computeIntervals = function(threshold, clip) {
+RasterImage.prototype.alphaAt = function(x, y) {
+    return this.imageData.data[(x * 4 + 3) + y * this.width * 4];
+};
+
+function Raster(url, box, shapeImageThreshold, shapeMargin, clip, whenReady) {
+    this.url = url;
+    this.box = box;
+    this.shapeImageThreshold = (256 * shapeImageThreshold);
+    this.shapeMargin = shapeMargin;
+    this.clip = clip;
+
+    this.init(whenReady);
+}
+
+Raster.prototype.init = function(callback) {
+    var raster = this;
+    var image = new Image();
+    var blob;
+
+    image.onload = function() {
+        raster.intervals = raster.computeIntervals(image);
+        if (raster.intervals) {
+            if (raster.shapeMargin > 0)
+                raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, raster.clip);
+            raster.bounds = raster.intervals.computeBounds();
+        }
+        if (blob)
+            URL.revokeObjectURL(blob);
+        callback();
+    };
+
+    image.onerror = function() {
+        error(raster.url);
+        /* raster.intervals is undefined */
+        callback();
+    };
+
+    /* Try this approach for browsers that don't support CORS-enabled images (IE) */
+    if (!image.hasOwnProperty('crossOrigin') && URL && URL.createObjectURL) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    blob = URL.createObjectURL(xhr.response);
+                    image.src = blob;
+                } else {
+                    error(raster.url);
+                    callback();
+                }
+            }
+        };
+        xhr.open('GET', raster.url, true);
+        xhr.responseType = 'blob';
+        xhr.send();
+    } else {
+        image.crossOrigin = "anonymous";
+        image.src = raster.url;
+    }
+};
+
+Raster.prototype.computeIntervals = function(image) {
+    var clip = this.clip,
+        threshold = this.shapeImageThreshold,
+        width = this.box.width,
+        height = this.box.height,
+        rasterImage = new RasterImage(image, width, height);
+
+    if (!rasterImage.hasData)
+        return undefined;
+
     var intervals = new RasterIntervals(-clip.y, clip.height),
-        maxY = Math.min(clip.height, this.height);
+        maxY = Math.min(clip.height, this.box.height);
     for (var y = 0; y < maxY; y++) {
         var startX = -1;
-        for (var x = 0; x < this.width; x++) {
-            var alpha = this.alphaAt(x, y);
+        for (var x = 0; x < this.box.width; x++) {
+            var alpha = rasterImage.alphaAt(x, y);
             if (startX == -1 && alpha > threshold) {
                 startX = x;
                 if (intervals.intervalAt(y) === RasterIntervals.none)
-                    intervals.setIntervalAt(y, new RasterInterval(y, startX, this.width));
+                    intervals.setIntervalAt(y, new RasterInterval(y, startX, width));
             } else if (startX != -1 && alpha <= threshold) {
                 intervals.intervalAt(y).endX = x;
                 startX = -1;
@@ -665,44 +741,10 @@ RasterImage.prototype.computeIntervals = function(threshold, clip) {
     return intervals;
 };
 
-function Raster(url, box, shapeImageThreshold, shapeMargin, clip, whenReady) {
-    this.url = url;
-    this.box = box;
-    this.shapeImageThreshold = (256 * shapeImageThreshold);
-    this.shapeMargin = shapeMargin;
-    this.image = new Image();
-    this.clip = clip;
-
-    var raster = this;
-    this.image.crossOrigin = "anonymous";
-    this.image.onload = function(event) {
-        try {
-            initRaster(raster, clip);
-        } catch(e) {
-            console.error("An error occurred while loading the image ", url, e);
-        }
-        whenReady();
-    };
-
-    this.image.onerror = function() {
-        // FIXME: We need more graceful error handling, but this will do for now
-        console.error("Unable to load the image ", url);
-    };
-
-    this.image.src = url;
-}
-
-function initRaster(raster, clip) {
-    var image = new RasterImage(raster.image, raster.box);
-    raster.intervals = image.computeIntervals(raster.shapeImageThreshold, clip);
-    if (raster.shapeMargin > 0)
-        raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, clip);
-    raster.bounds = raster.intervals.computeBounds();
-    raster.image = undefined;
-}
-
 Raster.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
     var intervals = this.intervals;
+    if (!intervals)
+        return this.clip.width;
     var x; // = undefined;
     for (var y = Math.max(y1, this.clip.y); y <= y2 && y < this.clip.maxY; y++) {
         var endX = intervals.intervalAt(y).endX;
@@ -714,6 +756,8 @@ Raster.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
 
 Raster.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     var intervals = this.intervals;
+    if (!intervals)
+        return 0;
     var x; // = undefined;
     for (var y = Math.max(y1, this.clip.y); y <= y2 && y < this.clip.maxY; y++) {
         var startX = intervals.intervalAt(y).startX;
