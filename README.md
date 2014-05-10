@@ -1,7 +1,7 @@
 shapes-polyfill
 ===============
 
-The shapes polyfill is a JavaScript implementation of the CSS Shapes specification.
+The shapes polyfill is a JavaScript implementation of the [CSS Shapes][css-shapes-spec] specification.
 You can use the polyfill to approximate CSS Shapes behavior in browsers that do not
 support the feature. By default, the polyfill will not run when a native shapes
 implementation is available.
@@ -114,6 +114,7 @@ The polyfill should work with all current versions of desktop and mobile browser
 
 Please let us know if you have any feedback. If you run into any problems, you can file a [new issue][new-issue]. You can also reach us [@adobeweb][twitter].
 
+[css-shapes-spec]: http://www.w3.org/TR/css-shapes/
 [new-issue]: https://github.com/adobe-webplatform/css-shapes-polyfill/issues/new
 [node]: http://nodejs.org
 [npm]: http://www.npmjs.org
