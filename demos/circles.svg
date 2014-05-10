@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="200px" height="200px" viewBox="0 0 100 100">
-    <circle cx="25" cy="25" r="25" fill="rgba(51, 51, 51, 0.8)"/>
-    <circle cx="75" cy="75" r="25" fill="rgba(51, 51, 51, 0.8)"/>
-</svg>
