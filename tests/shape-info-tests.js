@@ -44,6 +44,17 @@ function register(mocha, expect) {
             ]
         },
         {
+            name: 'for inset on the content box + (negative margin)',
+            shapeOutside: 'inset(0px) content-box',
+            styles: {
+                margin: '-20px'
+            },
+            step: 60,
+            output: [
+                { top: 0, bottom: 60, offset: 60, cssFloat: 'left' }
+            ]
+        },
+        {
             name: 'for inset on the content-box + (padding & border & margin)',
             shapeOutside: 'inset(0px) content-box',
             styles: {
@@ -141,6 +152,36 @@ function register(mocha, expect) {
                 { top: 120, bottom: 140, offset: 135, cssFloat: 'left' },
                 { top: 140, bottom: 160, offset: 0, cssFloat: 'left' },
                 { top: 160, bottom: 170, offset: 0, cssFloat: 'left' }
+            ]
+        },
+        {
+            name: 'for inset with rounds only on left',
+            shapeOutside: 'inset(0px round 50% 0 0 50%)',
+            step: 20,
+            output: [
+                { top: 0, bottom: 20, offset: 100, cssFloat: 'left' },
+                { top: 20, bottom: 40, offset: 100, cssFloat: 'left' },
+                { top: 40, bottom: 60, offset: 100, cssFloat: 'left' },
+                { top: 60, bottom: 80, offset: 100, cssFloat: 'left' },
+                { top: 80, bottom: 100, offset: 100, cssFloat: 'left' }
+            ]
+        },
+        {
+            name: 'for inset with rounds only on right',
+            shapeOutside: 'inset(0px round 0 50% 50% 0)',
+            step: 10,
+            output: [
+                { top: 0, bottom: 10, offset: 80, cssFloat: 'left' },
+                { top: 10, bottom: 20, offset: 90, cssFloat: 'left' },
+                /* don't check the offsets that are non-integer */
+                { top: 20, bottom: 30, cssFloat: 'left' },
+                { top: 30, bottom: 40, cssFloat: 'left' },
+                { top: 40, bottom: 50, offset: 100, cssFloat: 'left' },
+                { top: 50, bottom: 60, offset: 100, cssFloat: 'left' },
+                { top: 60, bottom: 70, cssFloat: 'left' },
+                { top: 70, bottom: 80, cssFloat: 'left' },
+                { top: 80, bottom: 90, offset: 90, cssFloat: 'left' },
+                { top: 90, bottom: 100, offset: 80, cssFloat: 'left' }
             ]
         },
         {
@@ -620,11 +661,94 @@ function register(mocha, expect) {
                 });
 
                 test.output.forEach(function(output, i) {
+
                     for (var prop in output)
                         expect(offsets[i][prop]).to.equal(output[prop]);
                 });
             })
         }
+    }
+
+    var adaptiveTests = {
+        styles: {
+                margin: '0',
+                border: 'none',
+                padding: '0',
+                width: '100px',
+                height: '100px',
+                cssFloat: 'left'
+        },
+        tests: [{
+            name: 'inset with rounds on left',
+            width: 100, height: 100,
+            topCorner: { width: 0, height: 0 },
+            bottomCorner: { width: 0, height: 0 },
+            shapeOutside: 'inset(0px round 50% 0 0 50%)'
+        }, {
+            name: 'inset with rounds on right',
+            width: 100, height: 100,
+            topCorner: { width: 50, height: 50 },
+            bottomCorner: { width: 50, height: 50 },
+            shapeOutside: 'inset(0px round 0 50% 50% 0)'
+        }, {
+            name: 'inset with uneven round on right',
+            width: 100, height: 100,
+            topCorner: { width: 50, height: 50 },
+            bottomCorner: { width: 20, height: 20 },
+            shapeOutside: 'inset(0px round 30% 50% 20% 40%)'
+        }, {
+            name: 'circle with negative margin',
+            width: 60, height: 60,
+            topCorner: { width: 0, height: 0 },
+            bottomCorner: { width: 0, height: 0 },
+            shapeOutside: 'circle() content-box',
+            styles: {
+                margin: '-20px'
+            }
+        }],
+        runTest: function(test) {
+            var fn = test.only ? it.only : it;
+            fn(test.name, function() {
+                var el = document.createElement('div'), prop;
+                for (prop in adaptiveTests.styles)
+                    el.style[prop] = adaptiveTests.styles[prop];
+                for (prop in test.styles)
+                    el.style[prop] = test.styles[prop];
+                el.setAttribute('data-shape-outside', test.shapeOutside);
+                if (test.shapeMargin)
+                    el.setAttribute('data-shape-margin', test.shapeMargin);
+
+                document.body.appendChild(el);
+                var shapeInfo = new ShapeInfo(el);
+                document.body.removeChild(el);
+
+                var offsets;
+                shapeInfo.onReady(function() {
+                    // returns immediately for non-image values
+                    offsets = shapeInfo.offsets({ limit: 18 });
+                });
+
+                offsets.forEach(function(offset) {
+                    var expected;
+                    if (offset.bottom <= test.topCorner.height) {
+                        expected = ellipseXIntercept(test.topCorner.height - offset.bottom, test.topCorner.width, test.topCorner.height);
+                        expected += test.width - test.topCorner.width;
+                        expect(offset.offset).to.be.within(expected - 0.1, expected + 0.1);
+                    } else if (offset.bottom <= test.height - test.bottomCorner.height) {
+                        expected = test.width;
+                        expect(offset.offset).to.equal(expected);
+                    } else {
+                        expected = ellipseXIntercept(offset.top - (test.height - test.bottomCorner.height), test.bottomCorner.width, test.bottomCorner.height);
+                        expected += test.width - test.bottomCorner.width;
+                        expect(offset.offset).to.be.within(expected - 0.1, expected + 0.1);
+                    }
+                });
+            });
+        }
+    }
+
+    function ellipseXIntercept(y, rx, ry) {
+        return rx * Math.sqrt(1 - (y * y) / (ry * ry));
     }
 
     function generateTests(testSet) {
@@ -635,7 +759,11 @@ function register(mocha, expect) {
 
     describe('ShapeInfo.offsets', function() {
         generateTests(offsetTests);
-    })
+    });
+
+    describe('ShapeInfo.offsets adaptive', function() {
+        generateTests(adaptiveTests);
+    });
 }
 
 return {

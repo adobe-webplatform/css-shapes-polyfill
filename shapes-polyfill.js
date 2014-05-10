@@ -772,8 +772,6 @@ Raster.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
     return x;
 };
 
-// FIXME: replace the zeroRadii mess
-
 function Size(width, height) {
     this.width = width;
     this.height = height;
@@ -1024,7 +1022,13 @@ function computeOffsetHeight(dx, dy, areaLimit) {
     return Math.round(Math.sqrt(2 * areaLimit * (dy / dx)));
 }
 
-RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
+function leftCornerOffset(leftCorner, offset) { return leftCorner.maxX - offset; }
+function rightCornerOffset(rightCorner, offset) { return rightCorner.x + offset; }
+function leftBoxOffset(box) { return box.x; }
+function rightBoxOffset(box) { return box.maxX; }
+
+function adaptiveOffsetFnGenerator(getTopCorner, getBottomCorner, getBoxOffset, getCornerOffset) {
+return function(y1, y2, areaLimit) { // y2 >= y1
     if (!this.rect.overlapsYRange(y1, y2))
         return [{x: undefined, height: y2 - y1}];
 
@@ -1033,70 +1037,35 @@ RoundedRect.prototype.leftExclusionOffsets = function(y1, y2, areaLimit) { // y2
     if (y1 < this.rect.y)
         offsets.push({x: undefined, height: this.rect.y - y1});
 
-    var topLeftCorner = this.topLeftCorner(), offsetHeight, maxY, xi, yi, y;
-    if (topLeftCorner.overlapsYRange(y1, y2)) {
-        offsetHeight = computeOffsetHeight(topLeftCorner.width, topLeftCorner.height, areaLimit);
-        maxY = Math.min(topLeftCorner.maxY, y2);
-        for (y = topLeftCorner.y; y < maxY; y += offsetHeight) {
-            yi = topLeftCorner.maxY - Math.min(y + offsetHeight, maxY);
-            xi = ellipseXIntercept(yi, topLeftCorner.width, topLeftCorner.height);
-            offsets.push({height: Math.min(offsetHeight, maxY - y), x: topLeftCorner.maxX - xi});
+    var offsetHeight, minY, maxY, y, yi, xi,
+        topCorner = getTopCorner.call(this),
+        bottomCorner = getBottomCorner.call(this),
+        boxArea = new Rect(this.rect.x, topCorner.maxY, this.rect.width, bottomCorner.y - topCorner.maxY);
+
+    if (topCorner.overlapsYRange(y1, y2)) {
+        offsetHeight = computeOffsetHeight(topCorner.width, topCorner.height, areaLimit);
+        minY = Math.max(topCorner.y, y1);
+        maxY = Math.min(topCorner.maxY, y2);
+        for (y = minY; y < maxY; y += offsetHeight) {
+            yi = topCorner.maxY - Math.min(y + offsetHeight, maxY);
+            xi = ellipseXIntercept(yi, topCorner.width, topCorner.height);
+            offsets.push({height: Math.min(offsetHeight, maxY - y), x: getCornerOffset(topCorner, xi) });
         }
     }
 
-    var cornersInsetRect = this.cornersInsetRect();
-    if (cornersInsetRect.overlapsYRange(y1, y2))
-        offsets.push({x: this.rect.x, height: cornersInsetRect.height});
+    minY = Math.max(boxArea.y, y1);
+    maxY = Math.min(boxArea.maxY, y2);
+    if (boxArea.overlapsYRange(y1, y2))
+        offsets.push({x: getBoxOffset(boxArea), height: maxY - minY });
 
-    var bottomLeftCorner = this.bottomLeftCorner();
-    if (bottomLeftCorner.overlapsYRange(y1, y2)) {
-        offsetHeight = computeOffsetHeight(bottomLeftCorner.width, bottomLeftCorner.height, areaLimit);
-        maxY = Math.min(bottomLeftCorner.maxY, y2);
-        for (y = bottomLeftCorner.y; y < maxY; y += offsetHeight) {
-            yi = y - bottomLeftCorner.y;
-            xi = ellipseXIntercept(yi, bottomLeftCorner.width, bottomLeftCorner.height);
-            offsets.push({height: Math.min(offsetHeight, maxY - y), x: bottomLeftCorner.maxX - xi});
-        }
-    }
-
-    if (y2 > this.rect.maxY)
-        offsets.push({x: undefined, height: y2 - this.rect.maxY});
-
-    return offsets;
-};
-
-RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y2 >= y1
-    if (!this.rect.overlapsYRange(y1, y2))
-        return [{x: undefined, height: y2 - y1}];
-
-    var offsets = [];
-
-    if (y1 < this.rect.y)
-        offsets.push({x: undefined, height: this.rect.y - y1});
-
-    var topRightCorner = this.topRightCorner(), offsetHeight, maxY, y, yi, xi;
-    if (topRightCorner.overlapsYRange(y1, y2)) {
-        offsetHeight = computeOffsetHeight(topRightCorner.width, topRightCorner.height, areaLimit);
-        maxY = Math.min(topRightCorner.maxY, y2);
-        for (y = topRightCorner.y; y < maxY; y += offsetHeight) {
-            yi = topRightCorner.maxY - Math.min(y + offsetHeight, maxY);
-            xi = ellipseXIntercept(yi, topRightCorner.width, topRightCorner.height);
-            offsets.push({height: Math.min(offsetHeight, maxY - y), x: topRightCorner.x + xi});
-        }
-    }
-
-    var cornersInsetRect = this.cornersInsetRect();
-    if (cornersInsetRect.overlapsYRange(y1, y2))
-        offsets.push({x: this.rect.maxX, height: cornersInsetRect.height});
-
-    var bottomRightCorner = this.bottomRightCorner();
-    if (bottomRightCorner.overlapsYRange(y1, y2)) {
-        offsetHeight = computeOffsetHeight(bottomRightCorner.width, bottomRightCorner.height, areaLimit);
-        maxY = Math.min(bottomRightCorner.maxY, y2);
-        for (y = bottomRightCorner.y; y < maxY; y += offsetHeight) {
-            yi = y - bottomRightCorner.y;
-            xi = ellipseXIntercept(yi, bottomRightCorner.width, bottomRightCorner.height);
-            offsets.push({height: Math.min(offsetHeight, maxY - y), x: bottomRightCorner.x + xi});
+    if (bottomCorner.overlapsYRange(y1, y2)) {
+        offsetHeight = computeOffsetHeight(bottomCorner.width, bottomCorner.height, areaLimit);
+        minY = Math.max(y1, bottomCorner.y);
+        maxY = Math.min(bottomCorner.maxY, y2);
+        for (y = minY; y < maxY; y += offsetHeight) {
+            yi = y - bottomCorner.y;
+            xi = ellipseXIntercept(yi, bottomCorner.width, bottomCorner.height);
+            offsets.push({height: Math.min(offsetHeight, maxY - y), x: getCornerOffset(bottomCorner, xi) });
         }
     }
 
@@ -1105,6 +1074,19 @@ RoundedRect.prototype.rightExclusionOffsets = function(y1, y2, areaLimit) { // y
 
     return offsets;
 };
+}
+
+RoundedRect.prototype.rightExclusionOffsets = adaptiveOffsetFnGenerator(
+    RoundedRect.prototype.topRightCorner,
+    RoundedRect.prototype.bottomRightCorner,
+    rightBoxOffset,
+    rightCornerOffset);
+
+RoundedRect.prototype.leftExclusionOffsets = adaptiveOffsetFnGenerator(
+    RoundedRect.prototype.topLeftCorner,
+    RoundedRect.prototype.bottomLeftCorner,
+    leftBoxOffset,
+    leftCornerOffset);
 
 function createRoundedRectForCircle(circle, margin) {
     var r = circle.r + margin;
@@ -1262,15 +1244,21 @@ ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
         this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
 
     var result = [];
-    var y = dy;
+    var y = 0;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset =
-            offsets[i].x === undefined ? 0 : Math.min(this.metrics.marginBox.width,
-            (this.metrics.cssFloat === 'left') ? offsets[i].x + dx : this.metrics.marginBox.width - (offsets[i].x + dx));
+        var layoutOffset;
+        if (offsets[i].x === undefined)
+            layoutOffset = 0;
+        else {
+            layoutOffset = this.metrics.cssFloat == 'left' ?
+                offsets[i].x + dx :
+                this.metrics.marginBox.width - (offsets[i].x + dx);
+            layoutOffset = Math.min(layoutOffset, this.metrics.marginBox.width);
+        }
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
         y += offsets[i].height;
     }
-    
+
     return result;
 };
 

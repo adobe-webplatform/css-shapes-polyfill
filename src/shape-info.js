@@ -169,15 +169,21 @@ ShapeInfo.prototype.computeAdaptiveOffsets = function(limit) {
         this.geometry.leftExclusionOffsets(-dy, this.metrics.marginBox.height - dy, limit);
 
     var result = [];
-    var y = dy;
+    var y = 0;
     for (var i = 0; i < offsets.length; i++) {
-        var layoutOffset =
-            offsets[i].x === undefined ? 0 : Math.min(this.metrics.marginBox.width,
-            (this.metrics.cssFloat === 'left') ? offsets[i].x + dx : this.metrics.marginBox.width - (offsets[i].x + dx));
+        var layoutOffset;
+        if (offsets[i].x === undefined)
+            layoutOffset = 0;
+        else {
+            layoutOffset = this.metrics.cssFloat == 'left' ?
+                offsets[i].x + dx :
+                this.metrics.marginBox.width - (offsets[i].x + dx);
+            layoutOffset = Math.min(layoutOffset, this.metrics.marginBox.width);
+        }
         result.push({offset: layoutOffset, top: y, bottom: y + offsets[i].height, cssFloat: this.metrics.cssFloat});
         y += offsets[i].height;
     }
-    
+
     return result;
 };
 
