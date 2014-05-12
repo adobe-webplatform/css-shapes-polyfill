@@ -1308,8 +1308,7 @@ function fakeIt(element, offsets) {
         position: 'relative',
         width: 'auto',
         height: '0',
-        clear: 'both',
-        'z-index': '-1' // Absolutely positioning the child normally forces it to the top
+        clear: 'both'
     };
 
     for (var prop in styles)
