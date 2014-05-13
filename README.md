@@ -51,7 +51,7 @@ If you are going to re-run the polyfill, you should first call `teardown`:
         }, 5000);
     </script>
 
-Optional parameters can be passed in a params object to the run method, including `force` which will reload all styles as well as re-running the layout algorithm.
+Optional parameters can be passed in a params object to the run method, including `force` which can be set to one of the `ShapePolyfill.Force` values to force style reload, layout, or both. You might want to use this approach if you are dynamically modifying styles, or want to control exactly when the polyfill runs. For an example, check out `tests\shapes-performance.html`.
 
 ## Building the Polyfill
 
@@ -78,8 +78,9 @@ The polyfill isn't perfect, and will generally work best with simple shapes. If 
 * Because of the way styles are loaded, inline styles, and those added after the script is loaded, will not be added automatically.
 * The implementation works by creating a series of floats approximating the shape's contour and parenting them within a zero-height div. As such, it may introduce line breaks if the original float shape occurs in the middle of a line of text.
 * Multiple shaped floats stacking or in close proximity may clear each other once the polyfill is applied.
-* The polyfill is slower than native implementations doing shapes layout (roughly 10-20x). You should weigh this as a performance concern.
+* The polyfill is slower than native implementations doing shapes layout (roughly 10-20x). You should take this into consideration when deciding if the polyfill is right for your project.
 * IE does not support SVG image values, as its security model prevents grabbing [rendered SVG pixel values via canvas][svg-canvas-origin-clean].
+* Some browsers will not issue a CORS request if a non-CORS version of the resource has already been loaded. This may surface if you use the same image as an `img`' `src` and `shape-outside`.
 
 ## Browser Support
 

@@ -134,12 +134,12 @@ Polyfill.prototype.run = function(settings) {
     var self = this;
 
     var force = settings && settings.force,
-        forceLayout = force && (force === this.Force.Layout || force === this.Force.Both),
-        forceStyles = force && (force === this.Force.Styles || force === this.Force.Both);
+        forceLayout = force && (force === this.Force.Layout || force === this.Force.LayoutStyles),
+        forceStyles = force && (force === this.Force.Styles || force === this.Force.LayoutStyles);
 
-    if (force === this.Force.Both)
+    if (force === this.Force.LayoutStyles)
         settings.force = this.Force.Layout;
-    else
+    else if (force)
         delete settings.force;
 
     if (this.hasNativeSupport === undefined) {
