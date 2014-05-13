@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="copyright" content="Copyright © 2014 Adobe Systems Incorporated. All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the “License”);
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an “AS IS” BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.">
+<style id='stylesheet'>
+.block {
+    width: 200px;
+    height: 200px;
+    clear: left;
+}
+.float .block {
+    float: left;
+}
+</style>
+</head>
+<body>
+    <form onsubmit='return submitHandler(event)'>
+        <label>shape-outside:<select id='shapeOutside'>
+            <option value='circle()'>circle()</option>
+            <option value='inset(10%)'>inset()</option>
+            <option value='ellipse()'>ellipse()</option>
+            <option value='polygon(0 0, 100% 100%, 0 100%)'>polygon()</option>
+            <option value='content-box'>content-box</option>
+        </select></label>
+        <label>elements<select id='numElements'>
+            <option value='10'>10</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+            <option value='200'>200</option>
+        </select></label>
+        <label>runs<select type='text' id='numRuns'>
+            <option value='10'>10</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+            <option value='200'>200</option>
+        </select></label>
+        <button>Run</button>
+    </form>
+    <div id='results'></div>
+</body>
+<script>
+function submitHandler(e) {
+    e.preventDefault();
+    runTests();
+    return false;
+}
+
+var floatResults, nativeResults, polyfillResults;
+function runTests() {
+    var shape = document.getElementById('shapeOutside').value,
+        elements = parseFloat(document.getElementById('numElements').value),
+        runs = parseFloat(document.getElementById('numRuns').value), i, start, end, s;
+
+    setup(elements, shape);
+
+    var container = document.querySelector('.container');
+
+    floatResults = [];
+    for (i = 0; i < runs; i++) {
+        container.offsetHeight;
+        start = new Date();
+        container.classList.add('float');
+        container.offsetHeight;
+        end = new Date();
+        container.classList.remove('float');
+        floatResults.push(end - start);
+    }
+
+    s = document.getElementById('stylesheet');
+    s.sheet.insertRule('.shape .block { shape-outside: ' + shape + '; -webkit-shape-outside: ' + shape + '; }', 0);
+    nativeResults = [];
+    s = getComputedStyle(container);
+    if (s.webkitShapeOutside !== undefined || s.shapeOutside !== undefined) {
+        for (i = 0; i < runs; i++) {
+            container.offsetHeight;
+            start = new Date();
+            container.classList.add('float');
+            container.classList.add('shape');
+            container.offsetHeight;
+            end = new Date();
+            container.classList.remove('float');
+            container.classList.remove('shape');
+            nativeResults.push(end - start);
+        }
+    }
+
+    polyfillResults = [];
+    container.classList.add('float');
+    for (i = 0; i < runs; i++) {
+        container.offsetHeight;
+        start = new Date();
+        /* Assumes synchronous layout (not url safe), and also
+         * does not count time necessary to load styles */
+        ShapesPolyfill.run({ force: ShapesPolyfill.Force.Layout });
+        container.offsetHeight;
+        end = new Date();
+        polyfillResults.push(end - start);
+        ShapesPolyfill.teardown();
+    }
+
+    done();
+}
+
+function done() {
+    teardown();
+    showResults();
+}
+
+function stats(times) {
+    var length = times.length;
+    if (!times.length) return {};
+    times.sort();
+    var result = {};
+    result.mean = times.reduce(function(sum, curr) {
+        return sum + curr;
+    }, 0) / length;
+    result.variance = times.reduce(function(sum, curr) {
+        return sum + (curr - result.mean) * (curr - result.mean);
+    }, 0) / length;
+    result.std = Math.sqrt(result.variance);
+    result.median = times[Math.floor(length / 2)];
+    return result;
+}
+
+function showResult(heading, stats) {
+    var el = document.createElement('div');
+    var result = "";
+    for (var prop in stats)
+        result += prop + ": " + stats[prop] + "ms<br/>";
+    if (!result.length)
+        result = "Not tested";
+    result = "<h3>" + heading + "</h3>" + result;
+    el.innerHTML = result;
+    document.getElementById('results').appendChild(el);
+}
+
+function showResults() {
+    var floatStats = stats(floatResults);
+    var nativeStats = stats(nativeResults);
+    var polyfillStats = stats(polyfillResults);
+
+    showResult("Floats without shape", floatStats);
+    showResult("Floats with natively implemented shape", nativeStats);
+    showResult("Floats with polyfilled shape", polyfillStats);
+}
+
+function teardown() {
+    document.body.removeChild(document.querySelector('.container'));
+}
+
+function setup(nElements, shape) {
+    document.getElementById('results').innerHTML = '';
+    var container = document.createElement('div');
+    container.classList.add('container');
+    for (var i = 0; i < nElements; i++) {
+        var el = document.createElement('div');
+        el.innerHTML = "<div class='block' data-shape-outside='" + shape + "'></div><p>PBR pop-up master cleanse art party forage, biodiesel brunch Neutra slow-carb irony. Swag pickled gluten-free, vinyl paleo PBR&amp;B yr literally Pinterest bicycle rights Williamsburg. McSweeney's keytar freegan, forage quinoa raw denim typewriter gluten-free lomo art party kogi Portland Wes Anderson chambray. Hella authentic twee Pitchfork, Truffaut umami Banksy Brooklyn bespoke kogi Godard Tonx occupy. Disrupt Pinterest jean shorts Portland, ethical mumblecore crucifix chia street art leggings roof party mixtape bicycle rights. Brunch narwhal kitsch, messenger bag 8-bit Williamsburg try-hard readymade. Tonx artisan cred, Neutra slow-carb gluten-free Godard bicycle rights blog.</p>\
+\
+    <p>Drinking vinegar sriracha ethnic, bicycle rights Thundercats sustainable leggings. Cardigan keffiyeh whatever kogi Portland PBR&amp;B lo-fi, ennui sriracha irony locavore authentic. Swag pork belly mustache, Tonx irony gluten-free polaroid narwhal locavore cray small batch. Selvage Carles +1 forage, craft beer Williamsburg Portland Thundercats vegan cornhole brunch twee gluten-free blog. Photo booth shabby chic lomo, paleo squid Shoreditch asymmetrical tofu YOLO four loko occupy. Synth food truck before they sold out, Echo Park scenester kale chips distillery pour-over raw denim High Life organic. Helvetica polaroid leggings irony paleo cardigan.</p>";
+        container.appendChild(el);
+    }
+    document.body.appendChild(container);
+}
+</script>
+<script src='../shapes-polyfill.js' data-auto-run='false'></script>
+</html>

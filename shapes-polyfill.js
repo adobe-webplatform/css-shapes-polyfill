@@ -1363,10 +1363,10 @@ Polyfill.prototype.polyfill = function(element, settings) {
 Polyfill.prototype.removePolyfill = function(element) {
     var oldParent = element.parentNode;
     for (oldParent = element.parentNode;
-        !oldParent || !oldParent.hasAttribute('data-shape-outside-container');
+        oldParent && oldParent.hasAttribute && !oldParent.hasAttribute('data-shape-outside-container');
         oldParent = oldParent.parentNode);
 
-    if (!oldParent)
+    if (!oldParent || !oldParent.hasAttribute)
         return;
 
     oldParent.parentNode.insertBefore(element, oldParent);
@@ -1388,8 +1388,13 @@ function debounce(func, wait) {
 Polyfill.prototype.run = function(settings) {
     var self = this;
 
-    var force = settings && settings.force;
-    if (force)
+    var force = settings && settings.force,
+        forceLayout = force && (force === this.Force.Layout || force === this.Force.Both),
+        forceStyles = force && (force === this.Force.Styles || force === this.Force.Both);
+
+    if (force === this.Force.Both)
+        settings.force = this.Force.Layout;
+    else
         delete settings.force;
 
     if (this.hasNativeSupport === undefined) {
@@ -1404,8 +1409,9 @@ Polyfill.prototype.run = function(settings) {
     if (this.hasNativeSupport && !force)
         return;
 
-    if (!this.stylesLoaded || force) {
+    if (!this.stylesLoaded || forceStyles) {
         this.stylesLoaded = true;
+
         new StylePolyfill(function(rules) {
             rules.forEach(function(rule) {
                 var els = document.querySelectorAll(rule.selector);
@@ -1435,6 +1441,8 @@ Polyfill.prototype.teardown = function() {
     for (var i = 0; i < els.length; i++)
         this.removePolyfill(els[i]);
 };
+
+Polyfill.prototype.Force = Object.freeze({ Layout: 'force-layout', Styles: 'force-styles', LayoutStyles: 'force-layout-styles' });
 
 /**
  * ShapeValue may contain { shape, box, url, shapeMargin, shapeImageThreshold }
