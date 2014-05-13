@@ -53,7 +53,8 @@ function fakeIt(element, offsets) {
         position: 'relative',
         width: 'auto',
         height: '0',
-        clear: 'both'
+        clear: 'both',
+        pointerEvents: 'none'
     };
 
     for (var prop in styles)
