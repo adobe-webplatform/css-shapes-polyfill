@@ -55,22 +55,6 @@ RasterIntervals.prototype.intervalAtContains = function(y, interval) {
     return intervalAtY.startX <= interval.startX && intervalAtY.endX >= interval.endX;
 };
 
-RasterIntervals.prototype.computeBounds = function() {
-    var minX, maxX, minY, maxY;
-    for (var y = this.minY; y < this.maxY; y++) {
-        var intervalAtY = this.intervalAt(y);
-        if (intervalAtY === RasterIntervals.none)
-            continue;
-        if (minY === undefined)
-            minY = maxY = y;
-        else
-            maxY = y;
-        minX = (minX === undefined) ? intervalAtY.startX : Math.min(minX, intervalAtY.startX);
-        maxX = (maxX === undefined) ? intervalAtY.endX : Math.max(maxX, intervalAtY.endX);
-    }
-    return new Rect(minX, minY, maxX - minX + 1, maxY - minY + 1);
-};
-
 function ShapeMarginIntervalGenerator(shapeMargin) {
     this.shapeMargin = shapeMargin;
     this.xIntercepts = [];
@@ -160,7 +144,6 @@ Raster.prototype.init = function(callback) {
         if (raster.intervals) {
             if (raster.shapeMargin > 0)
                 raster.intervals = raster.intervals.computeMarginIntervals(raster.shapeMargin, raster.clip);
-            raster.bounds = raster.intervals.computeBounds();
         }
         if (blob)
             URL.revokeObjectURL(blob);

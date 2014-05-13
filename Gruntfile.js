@@ -23,7 +23,7 @@ limitations under the License.\n\
 */\n\
 \n\
 ;(function(scope) {\n"use strict";\n\n',
-        footer: '\nscope.ShapesPolyfill = new Polyfill(scope);\n})(window);',
+        footer: '\nscope.ShapesPolyfill = new Polyfill(scope);\n})(window);\n',
 
         concat: {
             options: {
