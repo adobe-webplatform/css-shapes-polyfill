@@ -35,28 +35,18 @@ function isPointOnLineSegment(lineStartPoint, lineEndPoint, point)
         areCollinearPoints(lineStartPoint, lineEndPoint, point);
 }
 
-function PolygonEdge(polygon, vertex1Index, vertex2Index, edgeIndex) {
-    this.polygon = polygon;
-    this.vertex1Index = vertex1Index;
-    this.vertex2Index = vertex2Index;
-    this.edgeIndex = edgeIndex;
+/* Parent class for different edge types, child classes will need to call init
+ * to initialize the appropriate member variables */
+function PolygonEdge() {
 }
 
-Object.defineProperty(PolygonEdge.prototype, "vertex1", {
-    get: function() { return this.polygon.vertexAt(this.vertex1Index); }
-});
-
-Object.defineProperty(PolygonEdge.prototype, "vertex2", {
-    get: function() { return this.polygon.vertexAt(this.vertex2Index); }
-});
-
-Object.defineProperty(PolygonEdge.prototype, "minX", {
-    get: function() { return Math.min(this.vertex1.x, this.vertex2.x); }
-});
-
-Object.defineProperty(PolygonEdge.prototype, "maxX", {
-    get: function() { return Math.max(this.vertex1.x, this.vertex2.x); }
-});
+PolygonEdge.prototype.init = function(polygon, vertex1, vertex2) {
+    this.polygon = polygon;
+    this.vertex1 = vertex1;
+    this.vertex2 = vertex2;
+    this.minX = Math.min(this.vertex1.x, this.vertex2.x);
+    this.maxX = Math.max(this.vertex1.x, this.vertex2.x);
+};
 
 PolygonEdge.prototype.containsPoint = function(point) {
     return isPointOnLineSegment(this.vertex1, this.vertex2, point);
@@ -151,27 +141,29 @@ function clippedCircleXRange(center, radius, y1, y2) {
     return {x1: center.x - xi, x2: center.x + xi};
 }
 
+/* The edge of a polygon shape */
+function ShapeEdge(polygon, vertex1, vertex2) {
+    this.init(polygon, vertex1, vertex2);
+}
+
+ShapeEdge.prototype = new PolygonEdge();
+
+/* The polygon shape edge offset by shape-margin */
 function OffsetEdge(edge, normalUnitVector) {
     var shapeMargin = edge.polygon.shapeMargin;
     var dx = normalUnitVector.x * shapeMargin;
     var dy = normalUnitVector.y * shapeMargin;
-    
-    this.polygon = edge.polygon;
+
     this.anchorEdge = edge;
     this.normalUnitVector = normalUnitVector;
-    this.m_vertex1 = {x: edge.vertex1.x + dx, y: edge.vertex1.y + dy};
-    this.m_vertex2 = {x: edge.vertex2.x + dx, y: edge.vertex2.y + dy};
+
+    var vertex1 = {x: edge.vertex1.x + dx, y: edge.vertex1.y + dy};
+    var vertex2 = {x: edge.vertex2.x + dx, y: edge.vertex2.y + dy};
+
+    this.init(edge.polygon, vertex1, vertex2);
 }
 
 OffsetEdge.prototype = new PolygonEdge();
-
-Object.defineProperty(OffsetEdge.prototype, "vertex1", {
-    get: function() { return this.m_vertex1; }
-});
-
-Object.defineProperty(OffsetEdge.prototype, "vertex2", {
-    get: function() { return this.m_vertex2; }
-});
 
 function isVertexOrderClockwise(vertices) {
     var minVertexIndex = 0;
@@ -203,11 +195,10 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
     var maxY = minY;
 
     var clockwise = isVertexOrderClockwise(vertices);
-    var edgeIndex = 0;
     var vertex1Index = 0;
     do {
         var vertex2Index = this.nextEdgeVertexIndex(vertex1Index, clockwise);
-        edges.push(new PolygonEdge(this, vertex1Index, vertex2Index, edgeIndex++));
+        edges.push(new ShapeEdge(this, vertices[vertex1Index], vertices[vertex2Index]));
         var x = vertices[vertex1Index].x;
         var y = vertices[vertex1Index].y;
         minX = Math.min(x, minX);
@@ -218,13 +209,15 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
 
     } while (vertex1Index !== 0);
 
-    if (edgeIndex > 3) {
-        var firstEdge = edges[0];
-        var lastEdge = edges[edgeIndex - 1];
-        if (areCollinearPoints(lastEdge.vertex1, lastEdge.vertex2, firstEdge.vertex2)) {
-            edges[0].vertex1Index = lastEdge.vertex1Index;
-            edges.splice(edgeIndex - 1, 1);
-        }
+    // Where possible, combine 2 edges into 1
+    var edgeIndex = 0, nextEdgeIndex;
+    while (edgeIndex < edges.length && edges.length > 3) {
+        nextEdgeIndex = (edgeIndex + 1) % edges.length;
+        if (areCollinearPoints(edges[edgeIndex].vertex1, edges[edgeIndex].vertex2, edges[nextEdgeIndex].vertex2)) {
+            edges[edgeIndex].vertex2 = edges[nextEdgeIndex].vertex2;
+            edges.splice(nextEdgeIndex, 1);
+        } else
+            edgeIndex++;
     }
 
     if (shapeMargin === 0) {
@@ -244,19 +237,9 @@ function Polygon(vertices, fillRule, shapeMargin) { // vertices:  [{x, y}]
 
 Polygon.prototype.vertexAt = function(index) { return this.m_vertices[index]; };
 
-Object.defineProperty(Polygon.prototype, "numberOfVertices", {
-    get: function() { return this.m_vertices.length; }
-});
-
 Polygon.prototype.edgeAt = function(index) { return this.m_edges[index]; };
 
-Object.defineProperty(Polygon.prototype, "numberOfEdges", {
-    get: function() { return this.m_edges.length; }
-});
-
-Object.defineProperty(Polygon.prototype, "isEmpty", {
-    get: function() { return this.numberOfEdges < 3 || this.bounds.isEmpty; }
-});
+Polygon.prototype.isEmpty = function() { return this.m_edges.length < 3 || this.bounds.isEmpty(); };
 
 Polygon.prototype.vertices = function() { return this.m_vertices.slice(0); };
 Polygon.prototype.edges = function() { return this.m_edges.slice(0); };
@@ -266,12 +249,12 @@ Polygon.prototype.overlapsYRange = function(y1, y2) { // y range: y1 <= y < y2
 };
 
 Polygon.prototype.nextVertexIndex = function(vertexIndex, clockwise) {
-    var nVertices = this.numberOfVertices;
+    var nVertices = this.m_vertices.length;
     return ((clockwise) ? vertexIndex + 1 : vertexIndex - 1 + nVertices) % nVertices;
 };
 
 Polygon.prototype.nextEdgeVertexIndex = function(vertex1Index, clockwise) {
-    var nVertices = this.numberOfVertices;
+    var nVertices = this.m_vertices.length;
     var vertex2Index = this.nextVertexIndex(vertex1Index, clockwise);
 
     while (vertex2Index && areCoincidentPoints(this.vertexAt(vertex1Index), this.vertexAt(vertex2Index)))
@@ -289,7 +272,7 @@ Polygon.prototype.nextEdgeVertexIndex = function(vertex1Index, clockwise) {
 
 Polygon.prototype.containsPointEvenOdd = function(point) {
     var crossingCount = 0;
-    for (var i = 0; i < this.numberOfEdges; ++i) {
+    for (var i = 0; i < this.m_edges.length; ++i) {
         var edge = this.edgeAt(i);
         if (edge.containsPoint(point))
             return true;
@@ -306,7 +289,7 @@ Polygon.prototype.containsPointEvenOdd = function(point) {
 
 Polygon.prototype.containsPointNonZero = function(point) {
     var windingNumber = 0;
-    for (var i = 0; i < this.numberOfEdges; ++i) {
+    for (var i = 0; i < this.m_edges.length; ++i) {
         var edge = this.edgeAt(i);
         if (edge.containsPoint(point))
             return true;
@@ -331,7 +314,7 @@ Polygon.prototype.containsPoint = function(point) {
 
 Polygon.prototype.edgeVerticesThatOverlapYRange = function(y1, y2) {
     var result = [];
-    for (var i = 0; i < this.numberOfEdges; i++) {
+    for (var i = 0; i < this.m_edges.length; i++) {
         var vertex = this.edgeAt(i).vertex1;
         if (vertex.y >= y1 && vertex.y < y2)
             result.push(vertex);
@@ -341,7 +324,7 @@ Polygon.prototype.edgeVerticesThatOverlapYRange = function(y1, y2) {
 
 Polygon.prototype.edgesThatOverlapYRange = function(y1, y2) {
     var result = [];
-    for (var i = 0; i < this.numberOfEdges; i++) {
+    for (var i = 0; i < this.m_edges.length; i++) {
         var edge = this.edgeAt(i);
         if (edge.overlapsYRange(y1, y2))
             result.push(edge);
@@ -364,7 +347,7 @@ function compareEdgeMinX(edge1, edge2) { return edge1.minX - edge2.minX; }
 function compareVertexXIncreasing(vertex1, vertex2) { return vertex2.x - vertex1.x; }
 
 Polygon.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
-    if (this.isEmpty || !this.bounds.overlapsYRange(y1, y2))
+    if (this.isEmpty() || !this.bounds.overlapsYRange(y1, y2))
         return undefined;
 
     var result, i, xRange;
@@ -404,7 +387,7 @@ function compareEdgeMaxX(edge1, edge2) { return edge2.maxX - edge1.maxX; }
 function compareVertexXDecreasing(vertex1, vertex2) { return vertex1.x - vertex2.x; }
 
 Polygon.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
-    if (this.isEmpty || !this.bounds.overlapsYRange(y1, y2))
+    if (this.isEmpty() || !this.bounds.overlapsYRange(y1, y2))
         return undefined;
 
     var result, i, xRange;

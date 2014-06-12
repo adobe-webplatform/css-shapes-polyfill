@@ -15,6 +15,7 @@ limitations under the License.
 
 function Polyfill(scope) {
     this.scope = scope;
+
     var script = document.currentScript;
     if (!script) {
         script = document.getElementsByTagName('script');
@@ -188,4 +189,6 @@ Polyfill.prototype.teardown = function() {
         this.removePolyfill(els[i]);
 };
 
-Polyfill.prototype.Force = Object.freeze({ Layout: 'force-layout', Styles: 'force-styles', LayoutStyles: 'force-layout-styles' });
+Polyfill.prototype.Force = { Layout: 'force-layout', Styles: 'force-styles', LayoutStyles: 'force-layout-styles' };
+if (Object.freeze)
+    Polyfill.prototype.Force = Object.freeze(Polyfill.prototype.Force);

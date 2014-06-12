@@ -22,15 +22,15 @@ function register(mocha, expect) {
 
         it("polygon is-a Polygon", function() { expect(polygon).to.be.an.instanceof(Polygon); });
 
-        it("polygon.isEmpty", function() { expect(polygon.isEmpty).to.be.false; });
+        it("polygon.isEmpty", function() { expect(polygon.isEmpty()).to.be.false; });
 
-        it("polygon.isEmpty - no vertices", function() { expect(createPolygon([]).isEmpty).to.be.true; });
+        it("polygon.isEmpty - no vertices", function() { expect(createPolygon([]).isEmpty()).to.be.true; });
 
-        it("polygon.isEmpty - two vertices", function() { expect(createPolygon([0,0, 100,0]).isEmpty).to.be.true; });
+        it("polygon.isEmpty - two vertices", function() { expect(createPolygon([0,0, 100,0]).isEmpty()).to.be.true; });
         
-        it("polygon.isEmpty - one edge", function() { expect(createPolygon([0,0, 100,0, 200,0]).isEmpty).to.be.true; });
+        it("polygon.isEmpty - one edge", function() { expect(createPolygon([0,0, 100,0, 200,0]).isEmpty()).to.be.true; });
 
-        it("polygon.numberOfVertices", function() { expect(polygon.numberOfVertices).to.equal(4); });
+        it("polygon.numberOfVertices", function() { expect(polygon.vertices().length).to.equal(4); });
 
         it("polygon.vertices()", function() { expect(polygon.vertices()).to.deep.equal(vertices); });
 
@@ -45,14 +45,13 @@ function register(mocha, expect) {
             expect(polygon.vertexAt(2)).to.deep.equal({x:100, y:100});
             expect(polygon.vertexAt(3)).to.deep.equal({x:0, y:100}); });
 
-        it("polygon.numberOfEdges", function() { expect(polygon.numberOfEdges).to.equal(4); });
+        it("polygon.numberOfEdges", function() { expect(polygon.edges().length).to.equal(4); });
 
         it("polygon.edgeAt()", function() {
             for(var i = 0; i < vertices.length; i++) {
                 var edge = polygon.edgeAt(i);
                 expect(polygon.edgeAt(i)).to.be.an.instanceof(PolygonEdge);
                 expect(polygon.edgeAt(i).polygon).to.equal(polygon);
-                expect(polygon.edgeAt(i).edgeIndex).to.equal(i);
                 expect(polygon.edgeAt(i).vertex1).to.deep.equal(vertices[i]);
                 expect(polygon.edgeAt(i).vertex2).to.deep.equal(vertices[(i+1) % vertices.length]);
             }

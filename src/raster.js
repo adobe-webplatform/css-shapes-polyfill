@@ -28,12 +28,11 @@ function RasterIntervals(yOffset, size) {
     this.size = size;
     for (var i = 0; i < size; i++)
         this.intervals[i] = RasterIntervals.none;
+    this.minY = -yOffset;
+    this.maxY = size - yOffset;
 }
 
-Object.defineProperty(RasterIntervals, "none", {value:{}, writeable:false});
-
-Object.defineProperty(RasterIntervals.prototype, "minY", { get: function() { return -this.yOffset; } });
-Object.defineProperty(RasterIntervals.prototype, "maxY", { get: function() { return this.size - this.yOffset; } });
+RasterIntervals.none = {};
 
 RasterIntervals.prototype.intervalAt = function(y) { return this.intervals[y + this.yOffset]; };
 RasterIntervals.prototype.setIntervalAt = function(y, value) { this.intervals[y + this.yOffset] = value; };
@@ -138,6 +137,14 @@ Raster.prototype.init = function(callback) {
     var raster = this;
     var image = new Image();
     var blob;
+
+    /* If canvas is not supported, we're not going to get any further, so
+     * don't bother with the potential image / XHR request */
+    var canvas = document.createElement("canvas");
+    if (!canvas.getContext) {
+        error(raster.url);
+        callback();
+    }
 
     image.onload = function() {
         raster.intervals = raster.computeIntervals(image);

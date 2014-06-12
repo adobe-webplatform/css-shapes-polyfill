@@ -18,11 +18,9 @@ function Size(width, height) {
     this.height = height;
 }
 
-Object.defineProperty(Size, "zeroSize", {value:{width:0, height:0}, writeable:false});
+Size.zeroSize = { width:0, height:0 };
 
-Object.defineProperty(Size.prototype, "isEmpty", {
-    get: function() { return this.width <= 0 || this.height <= 0; }
-});
+Size.prototype.isEmpty = function() { return this.width <= 0 || this.height <= 0; };
 
 Size.prototype.scale = function(factor) {
     this.width *= factor;
@@ -34,21 +32,11 @@ function Rect(x, y, width, height) {
     this.y = y; 
     this.width = width; 
     this.height = height;
+    this.maxX = x + width;
+    this.maxY = y + height;
 }
 
-Object.defineProperty(Rect.prototype, "isEmpty", {
-    get: function() { return this.width <= 0 || this.height <= 0; }
-});
-
-Object.defineProperty(Rect.prototype, "maxX", {
-    get: function () { return this.x + this.width; },
-    set: function (value) { this.width = value - this.x; }
-});
-
-Object.defineProperty(Rect.prototype, "maxY", {
-    get: function () { return this.y + this.height; },
-    set: function (value) { this.height = value - this.y; }
-});
+Rect.prototype.isEmpty = function() { return this.width <= 0 || this.height <= 0; };
 
 Rect.prototype.containsX = function(x) { return x >= this.x && x < this.maxX; };
 Rect.prototype.containsY = function(y) { return y >= this.y && y < this.maxY; };
@@ -68,11 +56,11 @@ Rect.prototype.shiftRightEdgeTo = function(newX) {  this.width = newX - this.x; 
 Rect.prototype.shiftBottomEdgeTo = function(newY) { this.height = newY - this.y; };
 
 Rect.prototype.overlapsYRange = function(minY, maxY) {
-    return !this.isEmpty && maxY >= this.y && minY < this.maxY;
+    return !this.isEmpty() && maxY >= this.y && minY < this.maxY;
 };
 
 Rect.prototype.overlapsXRange = function(minX, maxX) {
-    return !this.isEmpty && maxX >= this.x && minX < this.maxX;
+    return !this.isEmpty() && maxX >= this.x && minX < this.maxX;
 };
 
 function RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight) { // corner radii parameters are {width, height}
@@ -80,9 +68,7 @@ function RoundedRect(rect, topLeft, topRight, bottomLeft, bottomRight) { // corn
     this.radii = {topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight};
 }
 
-Object.defineProperty(RoundedRect.prototype, "isEmpty", {
-    get: function() { return this.width <= 0 || this.height <= 0; }
-});
+RoundedRect.prototype.isEmpty = function() { return this.width <= 0 || this.height <= 0; };
 
 RoundedRect.prototype.topLeftCorner = function() {
     return new Rect(
@@ -141,19 +127,19 @@ RoundedRect.prototype.scaleRadii = function(factor)
     var radii = this.radii;
 
     radii.topLeft.scale(factor);
-    if (radii.topLeft.isEmpty)
+    if (radii.topLeft.isEmpty())
         radii.topLeft = Size.zeroSize;
 
     radii.topRight.scale(factor);
-    if (radii.topRight.isEmpty)
+    if (radii.topRight.isEmpty())
         radii.topRight = Size.zeroSize;
 
     radii.bottomLeft.scale(factor);
-    if (radii.bottomLeft.isEmpty)
+    if (radii.bottomLeft.isEmpty())
         radii.bottomLeft = Size.zeroSize;
 
     radii.bottomRight.scale(factor);
-    if (radii.bottomRight.isEmpty)
+    if (radii.bottomRight.isEmpty())
         radii.bottomRight = Size.zeroSize;
 };
 
@@ -236,7 +222,7 @@ RoundedRect.prototype.maxXInterceptAt = function(y, noInterceptReturnValue) {
 };
 
 RoundedRect.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
-    if (this.rect.isEmpty || !this.rect.overlapsYRange(y1, y2))
+    if (this.rect.isEmpty() || !this.rect.overlapsYRange(y1, y2))
         return undefined;
 
     if (!this.isRounded() || this.cornersInsetRect().overlapsYRange(y1, y2))
@@ -246,7 +232,7 @@ RoundedRect.prototype.rightExclusionEdge = function (y1, y2) { // y2 >= y1
 };
 
 RoundedRect.prototype.leftExclusionEdge = function(y1, y2) { // y2 >= y1
-    if (this.rect.isEmpty || !this.rect.overlapsYRange(y1, y2))
+    if (this.rect.isEmpty() || !this.rect.overlapsYRange(y1, y2))
         return undefined;
 
     if (!this.isRounded() || this.cornersInsetRect().overlapsYRange(y1, y2))
