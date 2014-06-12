@@ -1238,7 +1238,8 @@ function Polyfill(scope) {
     var self = this;
     var autoRun = script.getAttribute('data-auto-run') !== 'false';
 
-    if (autoRun) {
+    // IE < 9 uses attachEvent rather than addEventListener
+    if (autoRun && scope.addEventListener) {
         scope.addEventListener('load', function() {
             self.run(/*{mode: "step"}*/);
         });
