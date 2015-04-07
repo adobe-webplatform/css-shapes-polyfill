@@ -93,12 +93,16 @@ function createShapeGeometry(shapeValue, whenReady) {
 
 function ShapeInfo(element) {
     this.metrics = new Metrics(element);
+
+    var queryStep = this.getQueryStep(element.getAttribute('data-shape-size-mediaqueries').split('|'));
+
     var parserSettings = {
         metrics: this.metrics,
-        shapeOutside: element.getAttribute('data-shape-outside'),
-        shapeMargin: element.getAttribute('data-shape-margin'),
-        shapeImageThreshold: element.getAttribute('data-shape-image-threshold')
+        shapeOutside: element.getAttribute('data-shape-outside').split('|')[queryStep],
+        shapeMargin: element.getAttribute('data-shape-margin').split('|')[queryStep],
+        shapeImageThreshold: element.getAttribute('data-shape-image-threshold').split('|')[queryStep]
     };
+
     this.shapeValue = new ShapeValue(parserSettings);
 
     var self = this;
@@ -114,6 +118,24 @@ ShapeInfo.prototype.onReady = function(callback) {
         callback();
     else
         this.callback = callback;
+};
+
+ShapeInfo.prototype.getQueryStep = function(steps) {
+    var i = 0,
+        step = 0,
+        documentWidth = document.documentElement.clientWidth,
+        minWidth,
+        maxWidth;
+    for(i; i < steps.length; i++) {
+        minWidth = steps[i].split(',')[0].split('(')[1];
+        minWidth = minWidth === "null" ? 0 : Number(minWidth);
+        maxWidth = steps[i].split(',')[1].split(')')[0];
+        maxWidth = maxWidth === "null" ? documentWidth : Number(maxWidth);
+        if(documentWidth >= minWidth && documentWidth <= maxWidth) {
+            step = i;
+        }
+    }
+    return step;
 };
 
 ShapeInfo.prototype.leftExclusionEdge = function(line) { // { top, bottom, left, right }

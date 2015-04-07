@@ -161,10 +161,43 @@ Polyfill.prototype.run = function(settings) {
         this.stylesLoaded = true;
 
         new StylePolyfill(function(rules) {
+
+            var _this = this,
+                els,
+                queriesTab,
+                queryRule,
+                queryIndex;
+
             rules.forEach(function(rule) {
-                var els = document.querySelectorAll(rule.selector);
-                for (var i = 0; i < els.length; i++)
-                    els[i].setAttribute('data-' + rule.property, rule.value);
+                els = document.querySelectorAll(rule.selector);
+
+                for (var i = 0; i < els.length; i++){
+                    // if this is new element, we init all the value to null
+                    if(!els[i].hasAttribute('data-shape-outside')) {
+                        els[i].setAttribute('data-shape-outside', 'null');
+                        els[i].setAttribute('data-shape-margin', 'null');
+                        els[i].setAttribute('data-shape-image-threshold', 'null');
+                        els[i].setAttribute('data-shape-size-mediaqueries', '(null,null)');
+                    }
+
+                    queriesTab = els[i].getAttribute('data-shape-size-mediaqueries').split('|');
+                    queryRule = '('+rule.minWidth+','+rule.maxWidth+')';
+                    queryIndex = queriesTab.indexOf(queryRule);
+
+                    if(queryIndex === -1) {
+                        // mediaquery doesn't exist, we create a new entry
+                        els[i].setAttribute('data-shape-outside', els[i].getAttribute('data-shape-outside') + '|null');
+                        els[i].setAttribute('data-shape-margin', els[i].getAttribute('data-shape-margin') + '|null');
+                        els[i].setAttribute('data-shape-image-threshold', els[i].getAttribute('data-shape-image-threshold') + '|null');
+                        els[i].setAttribute('data-shape-size-mediaqueries', els[i].getAttribute('data-shape-size-mediaqueries') + '|' + queryRule);
+                        // we update specific entry
+                        _this.setPropertyForQuery(els[i], rule, queriesTab.length);
+                    } else {
+                        // mediaquery exist, we update specific entry
+                        _this.setPropertyForQuery(els[i], rule, queryIndex);
+                    }
+
+                }
             });
 
             self.run(settings);
@@ -180,8 +213,9 @@ Polyfill.prototype.run = function(settings) {
     }
 
     var els = document.querySelectorAll('[data-shape-outside]');
-    for (var i = 0; i < els.length; i++)
+    for (var i = 0; i < els.length; i++){
         this.polyfill(els[i], settings);
+    }
 };
 
 Polyfill.prototype.teardown = function() {
