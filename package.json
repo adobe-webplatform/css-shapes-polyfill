@@ -1,6 +1,6 @@
 {
   "name": "shapes-polyfill",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A Polyfill for CSS Shapes",
   "main": "index.js",
   "scripts": {
@@ -14,6 +14,10 @@
     "Bear Travis",
     "Hans Muller"
   ],
+  "contributors": [{
+    "name": "Cédric Saunier",
+    "email": "cedric.sa@gmail.com"
+  }],
   "license": "BSD",
   "readmeFilename": "README.md",
   "devDependencies": {

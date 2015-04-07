@@ -647,8 +647,9 @@ function register(mocha, expect) {
                 for (prop in test.styles)
                     el.style[prop] = test.styles[prop];
                 el.setAttribute('data-shape-outside', test.shapeOutside);
-                if (test.shapeMargin)
-                    el.setAttribute('data-shape-margin', test.shapeMargin);
+                el.setAttribute('data-shape-size-mediaqueries', test.shapeMediaQueries ? test.shapeMediaQueries : '(null,null)');
+                el.setAttribute('data-shape-margin', test.shapeMargin ? test.shapeMargin : 'null');
+                el.setAttribute('data-shape-image-threshold', test.shapeImageThreshold ? test.shapeImageThreshold : 'null');
 
                 document.body.appendChild(el);
                 var shapeInfo = new ShapeInfo(el);
@@ -715,8 +716,9 @@ function register(mocha, expect) {
                 for (prop in test.styles)
                     el.style[prop] = test.styles[prop];
                 el.setAttribute('data-shape-outside', test.shapeOutside);
-                if (test.shapeMargin)
-                    el.setAttribute('data-shape-margin', test.shapeMargin);
+                el.setAttribute('data-shape-size-mediaqueries', test.shapeMediaQueries ? test.shapeMediaQueries : '(null,null)');
+                el.setAttribute('data-shape-margin', test.shapeMargin ? test.shapeMargin : 'null');
+                el.setAttribute('data-shape-image-threshold', test.shapeImageThreshold ? test.shapeImageThreshold : 'null');
 
                 document.body.appendChild(el);
                 var shapeInfo = new ShapeInfo(el);

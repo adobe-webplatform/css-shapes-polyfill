@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
     var project = {
         files: ['src/*.js']
-    }
+    };
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -49,7 +49,7 @@ limitations under the License.\n\
 
         watch: {
             options: {
-                atBegin: true,
+                atBegin: true
             },
             js: {
                 files: project.files,
